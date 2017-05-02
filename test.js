@@ -2,16 +2,31 @@ var lex = require('pug-lexer')
 var parse = require('pug-parser')
 var linker = require('pug-linker')
 var load = require('pug-load')
-var generateCode = require('./pug-code-gen')
+// var generateCode = require('./pug-code-gen')
+var DomParser = require('dom-parser')
+var parser = new DomParser()
 
 var pug_tpl = `
 extends /layout.pug
 
+mixin pet(name, toto)
+  li.pet= name
+
 block content
+  // a comment
+  p= variable
+  
   p(class="1", toto=1) Hello world!
     a Top
       |  
-    a.somthing.toto Blop
+    a.somthing.toto= pet('blas')
+    +pet('blas', 1, 2)
+    if 1
+      Blop
+    else if 1
+      Nope
+    else
+      whatever
     
     - var pets = ['cat', 'dog']
     each petName in pets
@@ -20,11 +35,15 @@ block content
       = petName
 block footer
   include /foot.pug
+  p.
+    copyright 2015
 `
 
 var ast = parse(lex(pug_tpl))
 ast = load(ast, {lex: lex, parse: parse, basedir: './'})
 ast = linker(ast)
+
+console.log(ast)
 
 var _id = 0
 function uid () {
@@ -37,7 +56,6 @@ function Compiler (ast) {
   this.indent = 1
   this.parentId = 0
   this.parentTagId = 0
-  this.currentTagId = 0
   this.buffer = []
 }
 
@@ -67,7 +85,6 @@ Compiler.prototype.visitBlock = function (node, parent) {
 }
 
 Compiler.prototype.visitTag = function (node, parent) {
-  this.currentTagId++
   var id = uid()
   this.addI(`var n${id}_child = []\r\n`)
   var s = this.parentTagId
@@ -82,10 +99,12 @@ Compiler.prototype.visitTag = function (node, parent) {
   this.add(`}, n${id}_child)\r\n`)
   this.parentTagId = s
   this.addI(`n${s}_child.push(n${id})\r\n`)
-  this.currentTagId--
 }
 
 Compiler.prototype.visitText = function (node, parent) {
+  if (node.val[0] === '<') {
+    throw new Error(`Literal HTML cannot be supported properly: ${node.val}`)
+  }
   var s = JSON.stringify(node.val)
   this.addI(`n${this.parentTagId}_child.push(${s})\r\n`)
 }
@@ -102,6 +121,22 @@ Compiler.prototype.visitCode = function (node, parent) {
   }
 }
 
+Compiler.prototype.visitConditional = function (node, parent) {
+  this.addI(`if(${node.test}) {\r\n`)
+  this.indent++
+  this.visitBlock(node.consequent, this)
+  this.indent--
+  if (node.alternate) {
+    this.addI(`} else {\r\n`)
+    this.indent++
+    this.visit(node.alternate, this)
+    this.indent--
+  }
+  this.addI(`}\r\n`)
+}
+
+Compiler.prototype.visitComment = function (node, parent) {}
+
 Compiler.prototype.visitEach = function (node, parent) {
   var key = node.key || 'k' + uid()
   this.addI(`Object.keys(${node.obj}).forEach(function (${key}) {\r\n`)
@@ -113,7 +148,27 @@ Compiler.prototype.visitEach = function (node, parent) {
 }
 
 Compiler.prototype.visitExtends = function (node, parent) {
-  throw "Extends nodes need to be resolved with pug-load and pug-linker"
+  throw new Error('Extends nodes need to be resolved with pug-load and pug-linker')
+}
+
+Compiler.prototype.visitMixin = function (node, parent) {
+  if (node.call) {
+    this.addI(`${node.name}(${node.args})\r\n`)
+    return
+  }
+  var id = uid()
+  var s = this.parentTagId
+  this.parentTagId = id
+  this.addI(`function ${node.name}(${node.args}) {\r\n`)
+  this.indent++
+  this.addI(`var n${id}_child = []\r\n`)
+  if (node.block) {
+    this.visitBlock(node.block, node)
+  }
+  this.addI(`return n${id}_child\r\n`)
+  this.indent--
+  this.parentTagId = s
+  this.addI(`}\r\n`)
 }
 
 compiler = new Compiler(ast)
