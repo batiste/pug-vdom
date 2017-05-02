@@ -15,6 +15,14 @@ mixin pet(name, toto)
 block content
   // a comment
   p= variable
+  p This is #{msg.toUpperCase() + 'bam'}
+  
+  case friends
+    when 0
+    when 1
+      p you have very few friends
+    default
+      p you have #{friends} friends
   
   p(class="1", toto=1) Hello world!
     a Top
@@ -68,7 +76,13 @@ Compiler.prototype.addI = function (str) {
 }
 
 Compiler.prototype.compile = function () {
+  this.addI(`function render(context, h) {\r\n`)
+  this.indent++
+  this.addI(`var n0_child = []\r\n`)
   this.visit(this.ast)
+  this.addI(`return n0_child\r\n`)
+  this.indent--
+  this.addI(`}`)
 }
 
 Compiler.prototype.visit = function (node, parent) {
@@ -169,6 +183,31 @@ Compiler.prototype.visitMixin = function (node, parent) {
   this.indent--
   this.parentTagId = s
   this.addI(`}\r\n`)
+}
+
+Compiler.prototype.visitCase = function (node, parent) {
+  this.addI(`switch(${node.expr}) {\r\n`)
+  var self = this
+  node.block.nodes.forEach(function (_case, index) {
+    self.indent++
+    self.visit(_case)
+    self.indent--
+  })
+  this.addI(`}\r\n`)
+}
+
+Compiler.prototype.visitWhen = function (node, parent) {
+  if(node.expr === 'default') {
+    this.addI(`default:\r\n`)
+  } else {
+    this.addI(`case ${node.expr}:\r\n`)
+  }
+  this.indent++
+  if(node.block) {
+    this.visit(node.block, node)
+  }
+  this.addI(`break;\r\n`)
+  this.indent--
 }
 
 compiler = new Compiler(ast)
