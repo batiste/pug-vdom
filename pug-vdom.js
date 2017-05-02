@@ -3,18 +3,20 @@ var parse = require('pug-parser')
 var linker = require('pug-linker')
 var load = require('pug-load')
 // var generateCode = require('./pug-code-gen')
-var DomParser = require('dom-parser')
-var parser = new DomParser()
+// var DomParser = require('dom-parser')
+// var parser = new DomParser()
 
-var pug_tpl = `
+var pugTpl = `
 extends /layout.pug
 
 mixin pet(name, toto)
   li.pet= name
 
-block content
+block append content
   // a comment
   p= variable
+    .
+      This text belongs to the p tag.
   p This is #{msg.toUpperCase() + 'bam'}
   
   case friends
@@ -24,7 +26,7 @@ block content
     default
       p you have #{friends} friends
   
-  p(class="1", toto=1) Hello world!
+  p(class="1", toto=1 + pet) Hello world!
     a Top
       |  
     a.somthing.toto= pet('blas')
@@ -47,11 +49,9 @@ block footer
     copyright 2015
 `
 
-var ast = parse(lex(pug_tpl))
+var ast = parse(lex(pugTpl))
 ast = load(ast, {lex: lex, parse: parse, basedir: './'})
 ast = linker(ast)
-
-console.log(ast)
 
 var _id = 0
 function uid () {
@@ -78,6 +78,8 @@ Compiler.prototype.addI = function (str) {
 Compiler.prototype.compile = function () {
   this.addI(`function render(context, h) {\r\n`)
   this.indent++
+  // Bring all the variables from this into this scope
+  this.addI(`for (var prop in context) {eval('var ' + prop + ' =  context.' + prop)}\r\n`)
   this.addI(`var n0_child = []\r\n`)
   this.visit(this.ast)
   this.addI(`return n0_child\r\n`)
@@ -87,7 +89,7 @@ Compiler.prototype.compile = function () {
 
 Compiler.prototype.visit = function (node, parent) {
   if (!this['visit' + node.type]) {
-    throw 'Node not handled: ' + node.type
+    throw new Error('Node not handled: ' + node.type)
   }
   this['visit' + node.type](node, parent)
 }
@@ -197,13 +199,13 @@ Compiler.prototype.visitCase = function (node, parent) {
 }
 
 Compiler.prototype.visitWhen = function (node, parent) {
-  if(node.expr === 'default') {
+  if (node.expr === 'default') {
     this.addI(`default:\r\n`)
   } else {
     this.addI(`case ${node.expr}:\r\n`)
   }
   this.indent++
-  if(node.block) {
+  if (node.block) {
     this.visit(node.block, node)
   }
   this.addI(`break;\r\n`)
