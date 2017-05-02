@@ -31,7 +31,7 @@ Compiler.prototype.add = function (str) {
 }
 
 Compiler.prototype.addI = function (str) {
-  this.buffer.push(Array(this.indent + 1).join('  ') + str)
+  this.buffer.push(Array(this.indent).join('  ') + str)
 }
 
 Compiler.prototype.compile = function () {
@@ -40,15 +40,16 @@ Compiler.prototype.compile = function () {
 }
 
 Compiler.prototype.bootstrap = function () {
+  this.addI(`// PUG VDOM generated file\r\n`)
   this.addI(`function render(context, h) {\r\n`)
   this.indent++
   // Bring all the variables from this into this scope
   this.addI(`for (var prop in context) {eval('var ' + prop + ' =  context.' + prop)}\r\n`)
-  this.addI(`var n0_child = []\r\n`)
+  this.addI(`var n0Child = []\r\n`)
   this.visit(this.ast)
-  this.addI(`return n0_child\r\n`)
+  this.addI(`return n0Child\r\n`)
   this.indent--
-  this.addI(`}`)
+  this.addI(`}\r\n`)
 }
 
 Compiler.prototype.visit = function (node, parent) {
@@ -66,7 +67,7 @@ Compiler.prototype.visitBlock = function (node, parent) {
 
 Compiler.prototype.visitTag = function (node, parent) {
   var id = uid()
-  this.addI(`var n${id}_child = []\r\n`)
+  this.addI(`var n${id}Child = []\r\n`)
   var s = this.parentTagId
   this.parentTagId = id
   this.visitBlock(node.block)
@@ -76,9 +77,9 @@ Compiler.prototype.visitTag = function (node, parent) {
     at.push(`'${attr.name}': ${attr.val}`)
   })
   this.add(at.join(', '))
-  this.add(`}, n${id}_child)\r\n`)
+  this.add(`}, n${id}Child)\r\n`)
   this.parentTagId = s
-  this.addI(`n${s}_child.push(n${id})\r\n`)
+  this.addI(`n${s}Child.push(n${id})\r\n`)
 }
 
 Compiler.prototype.visitText = function (node, parent) {
@@ -86,7 +87,7 @@ Compiler.prototype.visitText = function (node, parent) {
     throw new Error(`Literal HTML cannot be supported properly: ${node.val}`)
   }
   var s = JSON.stringify(node.val)
-  this.addI(`n${this.parentTagId}_child.push(${s})\r\n`)
+  this.addI(`n${this.parentTagId}Child.push(${s})\r\n`)
 }
 
 Compiler.prototype.visitNamedBlock = function (node, parent) {
@@ -95,7 +96,7 @@ Compiler.prototype.visitNamedBlock = function (node, parent) {
 
 Compiler.prototype.visitCode = function (node, parent) {
   if (node.buffer) {
-    this.addI(`n${this.parentTagId}_child.push(${node.val})\r\n`)
+    this.addI(`n${this.parentTagId}Child.push(${node.val})\r\n`)
   } else {
     this.addI(node.val + '\r\n')
   }
@@ -141,11 +142,11 @@ Compiler.prototype.visitMixin = function (node, parent) {
   this.parentTagId = id
   this.addI(`function ${node.name}(${node.args}) {\r\n`)
   this.indent++
-  this.addI(`var n${id}_child = []\r\n`)
+  this.addI(`var n${id}Child = []\r\n`)
   if (node.block) {
     this.visitBlock(node.block, node)
   }
-  this.addI(`return n${id}_child\r\n`)
+  this.addI(`return n${id}Child\r\n`)
   this.indent--
   this.parentTagId = s
   this.addI(`}\r\n`)
@@ -176,7 +177,16 @@ Compiler.prototype.visitWhen = function (node, parent) {
   this.indent--
 }
 
+function generateFile (file, out, basedir) {
+  var ast = buildAst(file, basedir || '.')
+  var compiler = new Compiler(ast)
+  var code = compiler.compile()
+  code += '\r\nmodule.exports = render\r\n'
+  fs.writeFileSync(out, code)
+}
+
 module.exports = {
-  'ast': buildAst,
-  'Compiler': Compiler
+  ast: buildAst,
+  generateFile: generateFile,
+  Compiler: Compiler
 }
