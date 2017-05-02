@@ -1,0 +1,41 @@
+
+extends /layout.pug
+
+mixin pet(name, toto)
+  li.pet= name
+
+block append content
+  // a comment
+  p= variable
+    .
+      This text belongs to the p tag.
+  p This is #{msg.toUpperCase() + 'bam'}
+  
+  case friends
+    when 0
+    when 1
+      p you have very few friends
+    default
+      p you have #{friends} friends
+  
+  p(class="1", toto=1 + pet) Hello world!
+    a Top
+      |  
+    a.somthing.toto= pet('blas')
+    +pet('blas', 1, 2)
+    if 1
+      Blop
+    else if 1
+      Nope
+    else
+      whatever
+    
+    - var pets = ['cat', 'dog']
+    each petName in pets
+      = petName
+    each key, petName in pets
+      = petName
+block footer
+  include /foot.pug
+  p.
+    copyright 2015

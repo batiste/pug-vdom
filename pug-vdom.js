@@ -2,56 +2,15 @@ var lex = require('pug-lexer')
 var parse = require('pug-parser')
 var linker = require('pug-linker')
 var load = require('pug-load')
-// var generateCode = require('./pug-code-gen')
-// var DomParser = require('dom-parser')
-// var parser = new DomParser()
+var fs = require('fs')
 
-var pugTpl = `
-extends /layout.pug
-
-mixin pet(name, toto)
-  li.pet= name
-
-block append content
-  // a comment
-  p= variable
-    .
-      This text belongs to the p tag.
-  p This is #{msg.toUpperCase() + 'bam'}
-  
-  case friends
-    when 0
-    when 1
-      p you have very few friends
-    default
-      p you have #{friends} friends
-  
-  p(class="1", toto=1 + pet) Hello world!
-    a Top
-      |  
-    a.somthing.toto= pet('blas')
-    +pet('blas', 1, 2)
-    if 1
-      Blop
-    else if 1
-      Nope
-    else
-      whatever
-    
-    - var pets = ['cat', 'dog']
-    each petName in pets
-      = petName
-    each key, petName in pets
-      = petName
-block footer
-  include /foot.pug
-  p.
-    copyright 2015
-`
-
-var ast = parse(lex(pugTpl))
-ast = load(ast, {lex: lex, parse: parse, basedir: './'})
-ast = linker(ast)
+function buildAst (filename, basedir) {
+  var buf = fs.readFileSync(filename, 'utf8')
+  var ast = parse(lex(buf.toString()))
+  ast = load(ast, {lex: lex, parse: parse, basedir: basedir})
+  ast = linker(ast)
+  return ast
+}
 
 var _id = 0
 function uid () {
@@ -76,6 +35,11 @@ Compiler.prototype.addI = function (str) {
 }
 
 Compiler.prototype.compile = function () {
+  this.bootstrap()
+  return this.buffer.join('')
+}
+
+Compiler.prototype.bootstrap = function () {
   this.addI(`function render(context, h) {\r\n`)
   this.indent++
   // Bring all the variables from this into this scope
@@ -160,7 +124,7 @@ Compiler.prototype.visitEach = function (node, parent) {
   this.addI(`var ${node.val} = ${node.obj}[${key}]\r\n`)
   this.visitBlock(node.block)
   this.indent--
-  this.addI(`}\r\n`)
+  this.addI(`})\r\n`)
 }
 
 Compiler.prototype.visitExtends = function (node, parent) {
@@ -212,6 +176,7 @@ Compiler.prototype.visitWhen = function (node, parent) {
   this.indent--
 }
 
-compiler = new Compiler(ast)
-compiler.compile()
-console.log(compiler.buffer.join(''))
+module.exports = {
+  'ast': buildAst,
+  'Compiler': Compiler
+}
