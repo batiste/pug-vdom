@@ -20,8 +20,8 @@ describe('Compiler', function () {
   })
 
   it('Generates a module template', function (done) {
-    vDom.generateFile('tpl/all.pug', 'all.pug.js', './tpl')
-    var tpl = require('../all.pug.js')
+    vDom.generateFile('tpl/all.pug', 'public/all.pug.js', './tpl')
+    var tpl = require('../public/all.pug.js')
     var tree = tpl({variable: 1, msg: 'Blop', friends: []}, vdom)
     assert.ok(tree)
     done()

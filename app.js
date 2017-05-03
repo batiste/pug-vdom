@@ -1,0 +1,10 @@
+var render = require('./public/all.pug.js')
+var h = require('virtual-dom/h')
+var diff = require('virtual-dom/diff')
+var patch = require('virtual-dom/patch')
+var createElement = require('virtual-dom/create-element')
+
+var tree = render({variable: 1, msg: 'Blop', friends: []}, h)
+var rootNode = createElement(tree[0])
+console.log(rootNode)
+document.body.appendChild(rootNode)
