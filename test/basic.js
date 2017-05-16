@@ -14,7 +14,7 @@ describe('Compiler', function () {
     var code = compiler.compile()
     assert.ok(code)
     var render = new vm.Script(code + '\r\nrender({}, function(){})')
-    var context = new vm.createContext({variable: 1, msg: 'Blop', friends: []})
+    var context = new vm.createContext({variable: 1, msg: 'Blop', friends: 10, inputs: []})
     render.runInContext(context)
     done()
   })
@@ -22,7 +22,7 @@ describe('Compiler', function () {
   it('Generates a module template', function (done) {
     vDom.generateFile('tpl/all.pug', 'public/all.pug.js', './tpl')
     var tpl = require('../public/all.pug.js')
-    var tree = tpl({variable: 1, msg: 'Blop', friends: []}, vdom)
+    var tree = tpl({variable: 1, msg: 'Blop', friends: 10, inputs: []}, vdom)
     assert.ok(tree)
     done()
   })

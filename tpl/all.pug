@@ -1,16 +1,17 @@
 
 extends /layout.pug
-
-mixin pet(name, toto)
-  li.pet= name
+include /mixins.pug
 
 block append content
   // a comment
-  p= variable
-    .
-      This text belongs to the p tag.
-  p This is #{msg.toUpperCase() + 'bam'}
+  p This is #{msg.toUpperCase() + ' is the message'}
   
+  h2 Inputs
+  each input in inputs
+    p
+      input(type="text" value=input)
+  
+  h2 Friends
   case friends
     when 0
     when 1
@@ -18,6 +19,7 @@ block append content
     default
       p you have #{friends} friends
   
+  h2 Conditions
   p(class="1", toto=1 + pet) Hello world!
     a Top
       |  
@@ -30,11 +32,12 @@ block append content
     else
       whatever
     
+    h2 Pets
     - var pets = ['cat', 'dog']
     each petName in pets
-      = petName
+      p= petName
     each key, petName in pets
-      = petName
+      p= key + ':' + petName
 block footer
   include /foot.pug
   p.
