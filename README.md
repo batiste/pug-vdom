@@ -3,11 +3,13 @@
 The pug-vdom can compile a pug template into a render function that
 can create a virtual dom tree by using a library such as `virtual-dom`
 
+## Install
+
 ``` shell
   npm install pug-vdom
 ```
 
-Usage:
+## Usage
 
 ``` js
   var pugVDOM = require('pug-vdom')
