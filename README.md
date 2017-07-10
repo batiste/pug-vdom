@@ -13,7 +13,7 @@ can create a virtual dom tree by using a library such as `virtual-dom`
 
 ``` js
   var pugVDOM = require('pug-vdom')
-  var ast = vDom.ast('mytemplate.pug', './basedir')
+  var ast = pugVDOM.ast('mytemplate.pug', './basedir')
   var compiler = new pugVDOM.Compiler(ast)
   var code = compiler.compile()
 ```
@@ -26,10 +26,10 @@ The code variable contain a render function with this signature:
  }
 ```
 
-The return value is a list of hyperscript node, the hyperscript function
+The return value is a list of hyperscript node, the hyperscript function (https://github.com/hyperhype/hyperscript)
 is the one provided as the second parameter.
 
-An convenient function can be use to compile your pug files into
+An convenient function can be used to compile your pug files into
 directly usable module
 
 ``` js
@@ -41,13 +41,13 @@ Then typically you can use the resulting file like this
 
 ``` js
 var render = require('./output.pug.js') // importing the render function of this template
-var h = require('virtual-dom/h') // we use virtual dom here
+var h = require('virtual-dom/h') // we use virtual hyperscript function
 var diff = require('virtual-dom/diff')
 var patch = require('virtual-dom/patch')
 var createElement = require('virtual-dom/create-element')
 
 var tree = render({variable: 1}, h)
-var rootNode = createElement(tree[0]) // we expect only node at the root
+var rootNode = createElement(tree[0]) // we expect only node at the root from our template
 document.querySelector('main').appendChild(rootNode)
 
 function liveRender () {
