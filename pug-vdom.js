@@ -140,7 +140,7 @@ Compiler.prototype.visitMixin = function (node, parent) {
   var id = uid()
   var s = this.parentTagId
   this.parentTagId = id
-  this.addI(`function ${node.name}(${node.args}) {\r\n`)
+  this.addI(`function ${node.name}(${node.args || ''}) {\r\n`)
   this.indent++
   this.addI(`var n${id}Child = []\r\n`)
   if (node.block) {
