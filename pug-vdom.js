@@ -7,7 +7,7 @@ var fs = require('fs')
 function buildAst (filename, basedir) {
   var buf = fs.readFileSync(filename, 'utf8')
   var ast = parse(lex(buf.toString()))
-  ast = load(ast, {lex: lex, parse: parse, basedir: basedir})
+  ast = load(ast, {lex: lex, parse: parse, basedir: basedir, filename: filename})
   ast = linker(ast)
   return ast
 }
