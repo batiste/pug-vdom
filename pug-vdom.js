@@ -44,7 +44,9 @@ Compiler.prototype.bootstrap = function () {
   this.addI(`function render(context, h) {\r\n`)
   this.indent++
   // Bring all the variables from this into this scope
-  this.addI(`for (var prop in context) {eval('var ' + prop + ' =  context.' + prop)}\r\n`)
+  this.addI(`var locals = context;\r\n`)
+  this.addI(`var self = locals;\r\n`)
+  this.addI(`for (var prop in locals) eval('var ' + prop + ' =  locals.' + prop)\r\n`)
   this.addI(`var n0Child = []\r\n`)
   this.visit(this.ast)
   this.addI(`return n0Child\r\n`)
