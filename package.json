@@ -1,6 +1,6 @@
 {
   "name": "pug-vdom",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "pug-vdom.js",
   "scripts": {
