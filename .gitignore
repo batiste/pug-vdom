@@ -1,2 +1,3 @@
 node_modules
 *.pug.js
+.npmrc
