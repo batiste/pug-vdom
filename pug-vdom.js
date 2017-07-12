@@ -73,13 +73,13 @@ Compiler.prototype.visitTag = function (node, parent) {
   var s = this.parentTagId
   this.parentTagId = id
   this.visitBlock(node.block)
-  this.addI(`var n${id} = h('${node.name}', {`)
+  this.addI(`var n${id} = h('${node.name}', {attributes:{`)
   var at = []
   node.attrs.forEach(function (attr) {
     at.push(`'${attr.name}': ${attr.val}`)
   })
   this.add(at.join(', '))
-  this.add(`}, n${id}Child)\r\n`)
+  this.add(`}}, n${id}Child)\r\n`)
   this.parentTagId = s
   this.addI(`n${s}Child.push(n${id})\r\n`)
 }
