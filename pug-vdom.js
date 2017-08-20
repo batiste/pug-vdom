@@ -86,7 +86,7 @@ Compiler.prototype.visitTag = function (node, parent) {
 
 Compiler.prototype.visitText = function (node, parent) {
   if (node.val[0] === '<') {
-    throw new Error(`Literal HTML cannot be supported properly: ${node.val}`)
+    throw new Error(`Literal HTML cannot be supported properly yet (DomParser could do the trick): ${node.val}`)
   }
   var s = JSON.stringify(node.val)
   this.addI(`n${this.parentTagId}Child.push(${s})\r\n`)
