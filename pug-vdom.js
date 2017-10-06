@@ -73,7 +73,7 @@ Compiler.prototype.visitTag = function (node, parent) {
   var s = this.parentTagId
   this.parentTagId = id
   this.visitBlock(node.block)
-  this.addI(`var n${id} = h('${node.name}', {attributes:{`)
+  this.add('var attrs = {');
   var at = []
   var classes = []
   node.attrs.forEach(function (attr) {
@@ -87,7 +87,12 @@ Compiler.prototype.visitTag = function (node, parent) {
     at.push(`'class': ${classes.join('+\' \'+')}`)
   }
   this.add(at.join(', '))
-  this.add(`}}, n${id}Child)\r\n`)
+  this.add('};')
+  this.add('var currObj;')
+  this.add(node.attributeBlocks.reduce((final, block) => {
+      return 'currObj = ' + block + '; for (var propName in currObj) {attrs[propName] = currObj[propName]}';
+  }, ''));
+  this.addI(`var n${id} = h('${node.name}', {attributes:attrs}, n${id}Child)\r\n`)
   this.parentTagId = s
   this.addI(`n${s}Child.push(n${id})\r\n`)
 }
