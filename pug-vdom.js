@@ -84,13 +84,13 @@ Compiler.prototype.visitTag = function (node, parent) {
     }
   })
   if(classes.length > 0){
-    at.push(`'class': ${classes.join('+\' \'+')}`)
+    at.push(`'class': ${'[' + classes.join(',') + '].reduce(function(final, curr){return final.concat(curr)}, []).join(\' \')'}`)
   }
   this.add(at.join(', '))
   this.add('};')
   this.add('var currObj;')
   this.add(node.attributeBlocks.reduce((final, block) => {
-      return 'currObj = ' + block + '; for (var propName in currObj) {attrs[propName] = currObj[propName]}';
+      return 'currObj = ' + block + '; for (var propName in currObj) {attrs[propName] = currObj[propName]}\r\n';
   }, ''));
   this.addI(`var n${id} = h('${node.name}', {attributes:attrs}, n${id}Child)\r\n`)
   this.parentTagId = s
@@ -148,16 +148,17 @@ Compiler.prototype.visitExtends = function (node, parent) {
 }
 
 Compiler.prototype.visitMixin = function (node, parent) {
+  var s = this.parentTagId
   if (node.call) {
-    this.addI(`${node.name}(${node.args})\r\n`)
+    this.addI(`n${s}Child.push(${node.name}(${node.args}));\r\n`)
     return
   }
   var id = uid()
-  var s = this.parentTagId
   this.parentTagId = id
   this.addI(`function ${node.name}(${node.args || ''}) {\r\n`)
   this.indent++
   this.addI(`var n${id}Child = []\r\n`)
+
   if (node.block) {
     this.visitBlock(node.block, node)
   }
