@@ -73,7 +73,7 @@ Compiler.prototype.visitTag = function (node, parent) {
   var s = this.parentTagId
   this.parentTagId = id
   this.visitBlock(node.block)
-  this.add('var attrs = {');
+  this.add('var attrs = [' + node.attributeBlocks.join(',') + '].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {');
   var at = []
   var classes = []
   node.attrs.forEach(function (attr) {
@@ -84,14 +84,12 @@ Compiler.prototype.visitTag = function (node, parent) {
     }
   })
   if(classes.length > 0){
-    at.push(`'class': ${'[' + classes.join(',') + '].reduce(function(final, curr){return final.concat(curr)}, []).join(\' \')'}`)
+    at.push(`'class': ${'[' + classes.join(',') + ']'}`)
   }
   this.add(at.join(', '))
-  this.add('};')
-  this.add('var currObj;')
-  this.add(node.attributeBlocks.reduce((final, block) => {
-      return 'currObj = ' + block + '; for (var propName in currObj) {attrs[propName] = currObj[propName]}\r\n';
-  }, ''));
+  this.add('});')
+  this.add('if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");');
+
   this.addI(`var n${id} = h('${node.name}', {attributes:attrs}, n${id}Child)\r\n`)
   this.parentTagId = s
   this.addI(`n${s}Child.push(n${id})\r\n`)
