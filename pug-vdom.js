@@ -76,6 +76,7 @@ Compiler.prototype.visitTag = function (node, parent) {
   this.add('var attrs = [' + node.attributeBlocks.join(',') + '].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {');
   var at = []
   var classes = []
+
   node.attrs.forEach(function (attr) {
     if(attr.name === 'class'){
       classes = classes.concat(attr.val)
@@ -89,8 +90,9 @@ Compiler.prototype.visitTag = function (node, parent) {
   this.add(at.join(', '))
   this.add('});')
   this.add('if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");');
-
-  this.addI(`var n${id} = h('${node.name}', {attributes:attrs}, n${id}Child)\r\n`)
+  this.add('var properties = {attributes:attrs};');
+  this.add('if (attrs.id) properties.key = attrs.id;');
+  this.addI(`var n${id} = h('${node.name}', properties, n${id}Child)\r\n`)
   this.parentTagId = s
   this.addI(`n${s}Child.push(n${id})\r\n`)
 }
