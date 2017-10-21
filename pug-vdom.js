@@ -153,18 +153,26 @@ Compiler.prototype.visitMixin = function (node, parent) {
   var s = this.parentTagId
   if (node.call) {
     if(node.block) { // the call mixin define a block
-      console.log(node.name, node.block)
-      mixinBlock = node.block
+      var id = uid()
+      this.parentTagId = id
+      this.indent++
+      this.addI(`var n${id}Child = []\r\n`)
+      this.visitBlock(node.block, node)
+      var args = node.args ? `${node.args}, n${id}Child` : `n${id}Child`
+      this.addI(`n${s}Child.push(${node.name}(${args}));\r\n`)
+      this.indent--
+      this.parentTagId = s
+    } else {
+      this.addI(`n${s}Child.push(${node.name}(${node.args}));\r\n`)
     }
-    this.addI(`n${s}Child.push(${node.name}(${node.args}));\r\n`)
     return
   }
   var id = uid()
   this.parentTagId = id
-  this.addI(`function ${node.name}(${node.args || ''}) {\r\n`)
+  var args = node.args ? `${node.args}, __block` : `__block`
+  this.addI(`function ${node.name}(${args}) {\r\n`)
   this.indent++
   this.addI(`var n${id}Child = []\r\n`)
-
   if (node.block) {
     this.visitBlock(node.block, node)
   }
@@ -175,12 +183,7 @@ Compiler.prototype.visitMixin = function (node, parent) {
 }
 
 Compiler.prototype.visitMixinBlock = function (node, parent) {
-  console.log('visitMixinBlock', node, parent)
-  if(mixinBlock) {
-    this.visitBlock(mixinBlock, node)
-    mixinBlock = null
-  } else {
-  }
+  this.addI(`n${this.parentTagId}Child.push(__block);\r\n`)
 }
 
 Compiler.prototype.visitCase = function (node, parent) {
