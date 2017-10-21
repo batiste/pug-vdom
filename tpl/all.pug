@@ -5,6 +5,9 @@ include /mixins.pug
 block append content
   // a comment
   p This is #{msg.toUpperCase() + ' is the message'}
+  +withSomeBlock()
+    p
+      this text should be in red
   
   h2 Inputs
   each input in inputs

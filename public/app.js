@@ -1684,124 +1684,149 @@ function isArray(obj) {
 },{}],36:[function(require,module,exports){
 // PUG VDOM generated file
 function render(context, h) {
-  for (var prop in context) {eval('var ' + prop + ' =  context.' + prop)}
+  var locals = context;
+  var self = locals;
+  for (var prop in locals) eval('var ' + prop + ' =  locals.' + prop)
   var n0Child = []
   function pet(name, toto) {
-    var n1Child = []
-    var n2Child = []
-    n2Child.push(name)
-    var n2 = h('li', {'class': 'pet'}, n2Child)
-    n1Child.push(n2)
-    return n1Child
+    var n30Child = []
+    var n31Child = []
+    n31Child.push(name)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {'class': ['pet']});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n31 = h('li', properties, n31Child)
+    n30Child.push(n31)
+    return n30Child
   }
-  var n3Child = []
-  n3Child.push("First content")
-  var n4Child = []
-  n4Child.push("This is ")
-  n4Child.push(msg.toUpperCase() + ' is the message')
-  var n4 = h('p', {}, n4Child)
-  n3Child.push(n4)
-  var n5Child = []
-  n5Child.push("Inputs")
-  var n5 = h('h2', {}, n5Child)
-  n3Child.push(n5)
-  Object.keys(inputs).forEach(function (k6) {
-    var input = inputs[k6]
-    var n7Child = []
-    var n8Child = []
-    var n8 = h('input', {'type': "text", 'value': input}, n8Child)
-    n7Child.push(n8)
-    var n7 = h('p', {}, n7Child)
-    n3Child.push(n7)
+  function empty() {
+    var n32Child = []
+    var n33Child = []
+    n33Child.push('blop')
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n33 = h('p', properties, n33Child)
+    n32Child.push(n33)
+    return n32Child
+  }
+  function withSomeBlock() {
+    var n34Child = []
+    var n35Child = []
+    var n36Child = []
+    var n37Child = []
+    n37Child.push("text should be in red")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n37 = h('this', properties, n37Child)
+    n36Child.push(n37)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n36 = h('p', properties, n36Child)
+    n35Child.push(n36)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {'style': "color: red"});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n35 = h('div', properties, n35Child)
+    n34Child.push(n35)
+    return n34Child
+  }
+  var n38Child = []
+  n38Child.push("First content")
+  var n39Child = []
+  n39Child.push("This is ")
+  n39Child.push(msg.toUpperCase() + ' is the message')
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n39 = h('p', properties, n39Child)
+  n38Child.push(n39)
+  n38Child.push(withSomeBlock());
+  var n40Child = []
+  n40Child.push("Inputs")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n40 = h('h2', properties, n40Child)
+  n38Child.push(n40)
+  Object.keys(inputs).forEach(function (k41) {
+    var input = inputs[k41]
+    var n42Child = []
+    var n43Child = []
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {'type': "text", 'value': input});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n43 = h('input', properties, n43Child)
+    n42Child.push(n43)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n42 = h('p', properties, n42Child)
+    n38Child.push(n42)
   })
-  var n9Child = []
-  n9Child.push("Friends")
-  var n9 = h('h2', {}, n9Child)
-  n3Child.push(n9)
+  var n44Child = []
+  n44Child.push("Friends")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n44 = h('h2', properties, n44Child)
+  n38Child.push(n44)
   switch(friends) {
     case 0:
       break;
     case 1:
-      var n10Child = []
-      n10Child.push("you have very few friends")
-      var n10 = h('p', {}, n10Child)
-      n3Child.push(n10)
+      var n45Child = []
+      n45Child.push("you have very few friends")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;      var n45 = h('p', properties, n45Child)
+      n38Child.push(n45)
       break;
     default:
-      var n11Child = []
-      n11Child.push("you have ")
-      n11Child.push(friends)
-      n11Child.push(" friends")
-      var n11 = h('p', {}, n11Child)
-      n3Child.push(n11)
+      var n46Child = []
+      n46Child.push("you have ")
+      n46Child.push(friends)
+      n46Child.push(" friends")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;      var n46 = h('p', properties, n46Child)
+      n38Child.push(n46)
       break;
   }
-  var n12Child = []
-  n12Child.push("Conditions")
-  var n12 = h('h2', {}, n12Child)
-  n3Child.push(n12)
-  var n13Child = []
-  n13Child.push("Hello world!")
-  var n14Child = []
-  n14Child.push("Top")
-  n14Child.push(" ")
-  var n14 = h('a', {}, n14Child)
-  n13Child.push(n14)
-  var n15Child = []
-  n15Child.push(pet('blas'))
-  var n15 = h('a', {'class': 'somthing', 'class': 'toto'}, n15Child)
-  n13Child.push(n15)
-  pet('blas', 1, 2)
+  var n47Child = []
+  n47Child.push("Conditions")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n47 = h('h2', properties, n47Child)
+  n38Child.push(n47)
+  var n48Child = []
+  n48Child.push("Hello world!")
+  var n49Child = []
+  n49Child.push("Top")
+  n49Child.push(" ")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n49 = h('a', properties, n49Child)
+  n48Child.push(n49)
+  var n50Child = []
+  n50Child.push(pet('blas'))
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {'class': ['somthing','toto']});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n50 = h('a', properties, n50Child)
+  n48Child.push(n50)
+  n48Child.push(pet('blas', 1, 2));
   if(1) {
-    var n16Child = []
-    var n16 = h('Blop', {}, n16Child)
-    n13Child.push(n16)
+    var n51Child = []
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n51 = h('Blop', properties, n51Child)
+    n48Child.push(n51)
   } else {
     if(1) {
-      var n17Child = []
-      var n17 = h('Nope', {}, n17Child)
-      n13Child.push(n17)
+      var n52Child = []
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;      var n52 = h('Nope', properties, n52Child)
+      n48Child.push(n52)
     } else {
-      var n18Child = []
-      var n18 = h('whatever', {}, n18Child)
-      n13Child.push(n18)
+      var n53Child = []
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;      var n53 = h('whatever', properties, n53Child)
+      n48Child.push(n53)
     }
   }
-  var n19Child = []
-  n19Child.push("Pets")
-  var n19 = h('h2', {}, n19Child)
-  n13Child.push(n19)
+  var n54Child = []
+  n54Child.push("Pets")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n54 = h('h2', properties, n54Child)
+  n48Child.push(n54)
   var pets = ['cat', 'dog']
-  Object.keys(pets).forEach(function (k20) {
-    var petName = pets[k20]
-    var n21Child = []
-    n21Child.push(petName)
-    var n21 = h('p', {}, n21Child)
-    n13Child.push(n21)
+  Object.keys(pets).forEach(function (k55) {
+    var petName = pets[k55]
+    var n56Child = []
+    n56Child.push(petName)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n56 = h('p', properties, n56Child)
+    n48Child.push(n56)
   })
   Object.keys(pets).forEach(function (petName) {
     var key = pets[petName]
-    var n22Child = []
-    n22Child.push(key + ':' + petName)
-    var n22 = h('p', {}, n22Child)
-    n13Child.push(n22)
+    var n57Child = []
+    n57Child.push(key + ':' + petName)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;    var n57 = h('p', properties, n57Child)
+    n48Child.push(n57)
   })
-  var n13 = h('p', {'class': "1", 'toto': 1 + pet}, n13Child)
-  n3Child.push(n13)
-  var n23Child = []
-  n23Child.push("Content in between")
-  var n23 = h('p', {}, n23Child)
-  n3Child.push(n23)
-  var n24Child = []
-  n24Child.push("My nice footer")
-  var n24 = h('p', {}, n24Child)
-  n3Child.push(n24)
-  var n25Child = []
-  n25Child.push("copyright 2015")
-  var n25 = h('p', {}, n25Child)
-  n3Child.push(n25)
-  var n3 = h('main', {}, n3Child)
-  n0Child.push(n3)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {'toto': 1, 'class': ["1"]});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n48 = h('p', properties, n48Child)
+  n38Child.push(n48)
+  var n58Child = []
+  n58Child.push("Content in between")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n58 = h('p', properties, n58Child)
+  n38Child.push(n58)
+  var n59Child = []
+  n59Child.push("My nice footer")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n59 = h('p', properties, n59Child)
+  n38Child.push(n59)
+  var n60Child = []
+  n60Child.push("copyright 2015")
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n60 = h('p', properties, n60Child)
+  n38Child.push(n60)
+var attrs = [].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {});if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");var properties = {attributes:attrs};if (attrs.id) properties.key = attrs.id;  var n38 = h('main', properties, n38Child)
+  n0Child.push(n38)
   return n0Child
 }
 

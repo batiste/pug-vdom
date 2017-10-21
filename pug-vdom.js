@@ -72,7 +72,7 @@ Compiler.prototype.visitTag = function (node, parent) {
   this.addI(`var n${id}Child = []\r\n`)
   var s = this.parentTagId
   this.parentTagId = id
-  this.visitBlock(node.block)
+  this.visitBlock(node.block, node)
   this.add('var attrs = [' + node.attributeBlocks.join(',') + '].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {');
   var at = []
   var classes = []
@@ -120,12 +120,12 @@ Compiler.prototype.visitCode = function (node, parent) {
 Compiler.prototype.visitConditional = function (node, parent) {
   this.addI(`if(${node.test}) {\r\n`)
   this.indent++
-  this.visitBlock(node.consequent, this)
+  this.visitBlock(node.consequent, node)
   this.indent--
   if (node.alternate) {
     this.addI(`} else {\r\n`)
     this.indent++
-    this.visit(node.alternate, this)
+    this.visit(node.alternate, node)
     this.indent--
   }
   this.addI(`}\r\n`)
@@ -147,9 +147,15 @@ Compiler.prototype.visitExtends = function (node, parent) {
   throw new Error('Extends nodes need to be resolved with pug-load and pug-linker')
 }
 
+mixinBlock = null
+
 Compiler.prototype.visitMixin = function (node, parent) {
   var s = this.parentTagId
   if (node.call) {
+    if(node.block) { // the call mixin define a block
+      console.log(node.name, node.block)
+      mixinBlock = node.block
+    }
     this.addI(`n${s}Child.push(${node.name}(${node.args}));\r\n`)
     return
   }
@@ -166,6 +172,15 @@ Compiler.prototype.visitMixin = function (node, parent) {
   this.indent--
   this.parentTagId = s
   this.addI(`}\r\n`)
+}
+
+Compiler.prototype.visitMixinBlock = function (node, parent) {
+  console.log('visitMixinBlock', node, parent)
+  if(mixinBlock) {
+    this.visitBlock(mixinBlock, node)
+    mixinBlock = null
+  } else {
+  }
 }
 
 Compiler.prototype.visitCase = function (node, parent) {
