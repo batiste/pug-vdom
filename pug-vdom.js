@@ -147,8 +147,6 @@ Compiler.prototype.visitExtends = function (node, parent) {
   throw new Error('Extends nodes need to be resolved with pug-load and pug-linker')
 }
 
-mixinBlock = null
-
 Compiler.prototype.visitMixin = function (node, parent) {
   var s = this.parentTagId
   if (node.call) {
