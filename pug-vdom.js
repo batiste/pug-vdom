@@ -41,6 +41,8 @@ Compiler.prototype.compile = function () {
 
 Compiler.prototype.bootstrap = function () {
   this.addI(`// PUG VDOM generated file\r\n`)
+  this.addI(`if (!('pugVDOMRuntime' in window)) throw "pug-vdom runtime not found.";\r\n`)
+  this.addI(`var runtime = window.pugVDOMRuntime\r\n`)
   this.addI(`function render(context, h) {\r\n`)
   this.indent++
   // Bring all the variables from this into this scope
@@ -73,23 +75,7 @@ Compiler.prototype.visitTag = function (node, parent) {
   var s = this.parentTagId
   this.parentTagId = id
   this.visitBlock(node.block, node)
-  this.add('var attrs = [' + node.attributeBlocks.join(',') + '].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {');
-  var at = []
-  var classes = []
-
-  node.attrs.forEach(function (attr) {
-    if(attr.name === 'class'){
-      classes = classes.concat(attr.val)
-    } else {
-      at.push(`'${attr.name}': ${attr.val}`)
-    }
-  })
-  if(classes.length > 0){
-    at.push(`'class': ${'[' + classes.join(',') + ']'}`)
-  }
-  this.add(at.join(', '))
-  this.add('});')
-  this.add('if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");');
+  this.add(`var attrs = runtime.compileAttrs(${JSON.stringify(node.attrs)}, [${node.attributeBlocks.join(',')}])\r\n`)
   this.add('var properties = {attributes:attrs};');
   this.add('if (attrs.id) properties.key = attrs.id;');
   this.addI(`var n${id} = h('${node.name}', properties, n${id}Child)\r\n`)
