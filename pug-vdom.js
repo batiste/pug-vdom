@@ -72,7 +72,7 @@ Compiler.prototype.visitTag = function (node, parent) {
   this.addI(`var n${id}Child = []\r\n`)
   var s = this.parentTagId
   this.parentTagId = id
-  this.visitBlock(node.block)
+  this.visitBlock(node.block, node)
   this.add('var attrs = [' + node.attributeBlocks.join(',') + '].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {');
   var at = []
   var classes = []
@@ -120,12 +120,12 @@ Compiler.prototype.visitCode = function (node, parent) {
 Compiler.prototype.visitConditional = function (node, parent) {
   this.addI(`if(${node.test}) {\r\n`)
   this.indent++
-  this.visitBlock(node.consequent, this)
+  this.visitBlock(node.consequent, node)
   this.indent--
   if (node.alternate) {
     this.addI(`} else {\r\n`)
     this.indent++
-    this.visit(node.alternate, this)
+    this.visit(node.alternate, node)
     this.indent--
   }
   this.addI(`}\r\n`)
@@ -150,15 +150,27 @@ Compiler.prototype.visitExtends = function (node, parent) {
 Compiler.prototype.visitMixin = function (node, parent) {
   var s = this.parentTagId
   if (node.call) {
-    this.addI(`n${s}Child.push(${node.name}(${node.args}));\r\n`)
+    if(node.block) { // the call mixin define a block
+      var id = uid()
+      this.parentTagId = id
+      this.indent++
+      this.addI(`var n${id}Child = []\r\n`)
+      this.visitBlock(node.block, node)
+      var args = node.args ? `${node.args}, n${id}Child` : `n${id}Child`
+      this.addI(`n${s}Child.push(${node.name}(${args}));\r\n`)
+      this.indent--
+      this.parentTagId = s
+    } else {
+      this.addI(`n${s}Child.push(${node.name}(${node.args}));\r\n`)
+    }
     return
   }
   var id = uid()
   this.parentTagId = id
-  this.addI(`function ${node.name}(${node.args || ''}) {\r\n`)
+  var args = node.args ? `${node.args}, __block` : `__block`
+  this.addI(`function ${node.name}(${args}) {\r\n`)
   this.indent++
   this.addI(`var n${id}Child = []\r\n`)
-
   if (node.block) {
     this.visitBlock(node.block, node)
   }
@@ -166,6 +178,10 @@ Compiler.prototype.visitMixin = function (node, parent) {
   this.indent--
   this.parentTagId = s
   this.addI(`}\r\n`)
+}
+
+Compiler.prototype.visitMixinBlock = function (node, parent) {
+  this.addI(`n${this.parentTagId}Child.push(__block);\r\n`)
 }
 
 Compiler.prototype.visitCase = function (node, parent) {
