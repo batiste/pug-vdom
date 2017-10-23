@@ -2,7 +2,7 @@
 var assert = require('assert')
 var vDom = require('../pug-vdom')
 var vm = require('vm')
-require('../public/runtime');
+require('../runtime');
 var h = require('virtual-dom/h');
 
 var pugText1 = `
