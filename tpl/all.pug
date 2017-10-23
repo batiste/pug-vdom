@@ -5,6 +5,9 @@ include /mixins.pug
 block append content
   // a comment
   p This is #{msg.toUpperCase() + ' is the message'}
+  +withSomeBlock()
+    p
+      | this text should be in red
   
   h2 Inputs
   each input in inputs
@@ -20,7 +23,7 @@ block append content
       p you have #{friends} friends
   
   h2 Conditions
-  p(class="1", toto=1 + pet) Hello world!
+  p(class="1", toto=1) Hello world!
     a Top
       |  
     a.somthing.toto= pet('blas')
