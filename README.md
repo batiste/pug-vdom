@@ -59,3 +59,5 @@ function liveRender () {
   tree = newTree
 }
 ```
+
+If you are using Browserify, a transform is available https://github.com/gryphonmyers/pugvdomify
