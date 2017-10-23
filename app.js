@@ -1,3 +1,4 @@
+require('./runtime');
 var render = require('./public/all.pug.js')
 var h = require('virtual-dom/h')
 var diff = require('virtual-dom/diff')

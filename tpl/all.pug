@@ -8,12 +8,12 @@ block append content
   +withSomeBlock()
     p
       | this text should be in red
-  
+
   h2 Inputs
   each input in inputs
     p
       input(type="text" value=input)
-  
+
   h2 Friends
   case friends
     when 0
@@ -21,11 +21,11 @@ block append content
       p you have very few friends
     default
       p you have #{friends} friends
-  
+
   h2 Conditions
-  p(class="1", toto=1) Hello world!
+  p.class-3(class="class-1", toto=1)&attributes({class: 'class-2', toto:"3"}, {class: 'class-4', toto: '4'}) Hello world! This element should have 4 "class-*" classes and a toto attribute of 4
     a Top
-      |  
+      |
     a.somthing.toto= pet('blas')
     +pet('blas', 1, 2)
     if 1
@@ -34,7 +34,7 @@ block append content
       Nope
     else
       whatever
-    
+
     h2 Pets
     - var pets = ['cat', 'dog']
     each petName in pets

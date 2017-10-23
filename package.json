@@ -6,19 +6,21 @@
   "scripts": {
     "test": "mocha",
     "watch": "watchify app.js -o public/app.js -v",
-    "build": "node compile-tpl && browserify app.js -o public/app.js",
+    "build": "node compile-tpl && browserify src/runtime.js -s pugVDOMRuntime > dist/runtime.js && browserify app.js -o public/app.js",
     "start": "npm run watch & nodemon server.js"
   },
   "author": "batiste.bieler@gmail.com",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^14.3.0",
+    "browserify": "^14.5.0",
     "doctypes": "^1.1.0",
     "express": "^4.15.2",
     "mocha": "^3.3.0",
     "nodemon": "^1.11.0",
     "pug-attrs": "^2.0.2",
     "pug-lexer": "^3.1.0",
+    "pug-linker": "^3.0.3",
+    "pug-load": "^2.0.9",
     "pug-parser": "^2.0.2",
     "pug-runtime": "^2.0.3",
     "virtual-dom": "^2.1.1",
