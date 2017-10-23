@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "watch": "watchify app.js -o public/app.js -v",
-    "build": "node compile-tpl && browserify app.js -o public/app.js",
+    "build": "node compile-tpl && browserify app.js -o public/app.js && browserify runtime.js -s pugVDOMRuntime > public/runtime.js",
     "start": "npm run watch & nodemon server.js"
   },
   "author": "batiste.bieler@gmail.com",

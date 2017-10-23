@@ -2,3 +2,4 @@ node_modules
 *.pug.js
 .npmrc
 public/app.js
+.DS_Store

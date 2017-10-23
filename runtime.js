@@ -1,6 +1,7 @@
 var mergeAttrs = {class: 1};
 
 exports.compileAttrs = compileAttrs;
+global.pugVDOMRuntime = exports
 
 function stripQuotes(str) {
     return str.replace(/"|'/g,"");
@@ -14,7 +15,7 @@ function compileAttrs(attrs, attrBlocks) {
             }
             return finalObj;
         }, attrs.reduce(function(finalObj, attr) {
-            var val = stripQuotes(attr.val);
+            var val = attr.val;//typeof attrstripQuotes(attr.val);
             finalObj[attr.name] = finalObj[attr.name] ? finalObj[attr.name].concat(val) : [val]
             return finalObj;
         }, {}));
@@ -25,5 +26,3 @@ function compileAttrs(attrs, attrBlocks) {
 
     return attrsObj;
 }
-
-if (!('pugVDOMRuntime' in window)) window.pugVDOMRuntime = exports;
