@@ -45,6 +45,8 @@ var h = require('virtual-dom/h') // we use virtual hyperscript function
 var diff = require('virtual-dom/diff')
 var patch = require('virtual-dom/patch')
 var createElement = require('virtual-dom/create-element')
+//runtime library is required and puts 'pugVDOMRuntime' into the global scope.
+require('pug-vdom/runtime')
 
 var tree = render({variable: 1}, h)
 var rootNode = createElement(tree[0]) // we expect only node at the root from our template
@@ -57,3 +59,5 @@ function liveRender () {
   tree = newTree
 }
 ```
+
+If you are using Browserify, a transform is available https://github.com/gryphonmyers/pugvdomify

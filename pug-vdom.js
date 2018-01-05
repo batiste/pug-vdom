@@ -12,6 +12,16 @@ function buildAst (filename, basedir) {
   return ast
 }
 
+function pugTextToAst (pugText) {
+    var ast = parse(lex(pugText.trim()))
+    ast = linker(ast)
+    return ast
+}
+
+function generateTemplateFunction(pugText) {
+    return eval('('+new Compiler(pugTextToAst(pugText)).compile()+')');
+}
+
 var _id = 0
 function uid () {
   _id++
@@ -40,9 +50,10 @@ Compiler.prototype.compile = function () {
 }
 
 Compiler.prototype.bootstrap = function () {
-  this.addI(`// PUG VDOM generated file\r\n`)
   this.addI(`function render(context, h) {\r\n`)
   this.indent++
+  this.addI(`if (!pugVDOMRuntime) throw "pug-vdom runtime not found.";\r\n`)
+  this.addI(`var runtime = pugVDOMRuntime\r\n`)
   // Bring all the variables from this into this scope
   this.addI(`var locals = context;\r\n`)
   this.addI(`var self = locals;\r\n`)
@@ -73,26 +84,9 @@ Compiler.prototype.visitTag = function (node, parent) {
   var s = this.parentTagId
   this.parentTagId = id
   this.visitBlock(node.block, node)
-  this.add('var attrs = [' + node.attributeBlocks.join(',') + '].reduce(function(finalObj, currObj){ for (var propName in currObj) {finalObj[propName] = propName === "class" ? (finalObj[propName] ? finalObj[propName].concat(currObj[propName]) : [currObj[propName]]) : currObj[propName]; } return finalObj; }, {');
-  var at = []
-  var classes = []
-
-  node.attrs.forEach(function (attr) {
-    if(attr.name === 'class'){
-      classes = classes.concat(attr.val)
-    } else {
-      at.push(`'${attr.name}': ${attr.val}`)
-    }
-  })
-  if(classes.length > 0){
-    at.push(`'class': ${'[' + classes.join(',') + ']'}`)
-  }
-  this.add(at.join(', '))
-  this.add('});')
-  this.add('if (attrs.class) attrs.class = attrs.class.reduce(function(arr, currClass){ return arr.concat(currClass) }, []).join(" ");');
-  this.add('var properties = {attributes:attrs};');
-  this.add('if (attrs.id) properties.key = attrs.id;');
-  this.addI(`var n${id} = h('${node.name}', properties, n${id}Child)\r\n`)
+  this.addI(`var props = {attributes: runtime.compileAttrs([${node.attrs.map(attr => '{name:\'' + attr.name + '\', val: ' + attr.val + '}').join(',')}], [${node.attributeBlocks.join(',')}])};\r\n`);
+  this.addI(`if (props.attributes.id) props.key = props.attributes.id;\r\n`);
+  this.addI(`var n${id} = h('${node.name}', props, n${id}Child)\r\n`)
   this.parentTagId = s
   this.addI(`n${s}Child.push(n${id})\r\n`)
 }
@@ -212,13 +206,16 @@ Compiler.prototype.visitWhen = function (node, parent) {
 function generateFile (file, out, basedir) {
   var ast = buildAst(file, basedir || '.')
   var compiler = new Compiler(ast)
-  var code = compiler.compile()
+  var code = '// PUG VDOM generated file\r\n' + compiler.compile()
   code += '\r\nmodule.exports = render\r\n'
   fs.writeFileSync(out, code)
 }
 
+
 module.exports = {
   ast: buildAst,
+  generateTemplateFunction: generateTemplateFunction,
+  pugTextToAst: pugTextToAst,
   generateFile: generateFile,
   Compiler: Compiler
 }
