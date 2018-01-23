@@ -4,13 +4,13 @@ var linker = require('pug-linker')
 var load = require('pug-load')
 var fs = require('fs')
 
-function buildAst (filename, basedir) {
+function buildAst (filename, basedir, options) {
   if (filename.substr(-4) !== '.pug') {
     filename = filename + '.pug';
   }
   var buf = fs.readFileSync(filename, 'utf8')
   var ast = parse(lex(buf.toString()), { filename })
-  ast = load(ast, {lex: lex, parse: parse, basedir: basedir })
+  ast = load(ast, Object.assign({}, options, {lex: lex, parse: parse, basedir: basedir }))
   ast = linker(ast)
   return ast
 }
