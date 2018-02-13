@@ -25,6 +25,14 @@ var pugText5 = `
 .class-1#my-id(data-foo=locals.myLocal, class=['class-2', 'class-3'])&attributes({class: ["class-4"]}, {class: 'class-5', 'data-moo': locals.myOtherLocal})
 `
 
+var pugText6 = `
+.class-1#my-id(data-foo=locals.myLocal, class=['class-2', 'class-3'])&attributes({class: ["class-4"]}, {class: 'class-5', 'data-moo': locals.myOtherLocal}, {class: {'my-class': true, 'my-other-class': false, 'my-third-class': locals.myThirdLocal, 'my-fourth-class': locals.myFourthLocal } })
+`
+
+var pugText7 = `
+.class-1(class={'class-2': locals.myLocal, 'class-3': false, 'class-4': {} })
+`
+
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
 }
@@ -109,6 +117,35 @@ describe('Compiler', function () {
       assert.equal(vnode.key, 'my-id')
 
       done()
+  })
+
+  it('Compiles a pug tag with complex attributes using multiple &attributes blocks and class attribute as object', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText6)({
+        myLocal: "foo",
+        myOtherLocal: "moo",
+        myThirdLocal: true,
+        myFourthLocal: false
+    }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4 class-5 my-class my-third-class')
+    assert.equal(vnode.properties.attributes.id, 'my-id')
+    assert.equal(vnode.properties.attributes['data-foo'], 'foo')
+    assert.equal(vnode.properties.attributes['data-moo'], 'moo')
+    assert.equal(vnode.key, 'my-id')
+
+    done()
+  })
+
+  it('Compiles a pug tag with class attribute as object', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText7)({
+        myLocal: true
+    }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-4')
+
+    done()
   })
 
 })

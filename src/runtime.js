@@ -1,5 +1,3 @@
-var mergeAttrs = {class: 1};
-
 exports.compileAttrs = compileAttrs;
 global.pugVDOMRuntime = exports
 
@@ -21,7 +19,22 @@ function compileAttrs(attrs, attrBlocks) {
         }, {}));
     
     for (var propName in attrsObj) {
-        attrsObj[propName] = mergeAttrs[propName] ? flatten(attrsObj[propName]).join(' ') : attrsObj[propName].pop();
+        if (propName === 'class') {
+            attrsObj[propName] = flatten(attrsObj[propName].map(attrValue => {
+                if (attrValue && typeof attrValue === 'object' && !Array.isArray(attrValue)) {
+                    var classResult = [];
+                    for (var className in attrValue) {
+                        if (attrValue[className]) {
+                            classResult.push(className);
+                        }
+                    }
+                    return classResult;
+                }
+                return attrValue;
+            })).join(' ');            
+        } else {
+            attrsObj[propName] = attrsObj[propName].pop();
+        }
     }
 
     return attrsObj;
