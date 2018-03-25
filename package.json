@@ -9,6 +9,10 @@
     "build": "node compile-tpl && browserify src/runtime.js -s pugVDOMRuntime > dist/runtime.js && browserify app.js -o public/app.js",
     "start": "npm run watch & nodemon server.js"
   },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/batiste/pug-vdom.git"
+  },
   "author": "batiste.bieler@gmail.com",
   "license": "MIT",
   "devDependencies": {
