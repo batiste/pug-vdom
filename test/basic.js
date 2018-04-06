@@ -33,6 +33,13 @@ var pugText7 = `
 .class-1(class={'class-2': locals.myLocal, 'class-3': false, 'class-4': {} })
 `
 
+var pugText8 = `
+- var n = 0;
+ul
+    while n < locals.numChildren
+        li= n++
+`;
+
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
 }
@@ -144,6 +151,19 @@ describe('Compiler', function () {
     var vnode = vnodes[0];
 
     assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-4')
+
+    done()
+  })
+
+  it('Compiles pug code using while loop', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText8)({
+        numChildren: 4
+    }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.tagName, `UL`)
+    assert.equal(vnode.children.length, 4)
+    assert.ok(vnode.children.every(child => child.tagName === 'LI'))
 
     done()
   })
