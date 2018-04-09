@@ -22,10 +22,6 @@
     "mocha": "^3.3.0",
     "nodemon": "^1.11.0",
     "pug-attrs": "^2.0.2",
-    "pug-lexer": "^3.1.0",
-    "pug-linker": "^3.0.3",
-    "pug-load": "^2.0.9",
-    "pug-parser": "^2.0.2",
     "pug-runtime": "^2.0.3",
     "virtual-dom": "^2.1.1",
     "void-elements": "^3.1.0",
@@ -34,6 +30,8 @@
   },
   "dependencies": {
     "pug-lexer": "^3.1.0",
+    "pug-linker": "^3.0.3",
+    "pug-load": "^2.0.9",
     "pug-parser": "^2.0.2",
     "pug-runtime": "^2.0.3"
   }
