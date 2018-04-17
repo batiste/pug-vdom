@@ -40,6 +40,11 @@ ul
         li= n++
 `;
 
+var pugText9 = `
+.parent
+    #{locals.myTagName}(data-foo="somevalue")
+`;
+
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
 }
@@ -164,6 +169,18 @@ describe('Compiler', function () {
     assert.equal(vnode.tagName, `UL`)
     assert.equal(vnode.children.length, 4)
     assert.ok(vnode.children.every(child => child.tagName === 'LI'))
+
+    done()
+  })
+
+  it('Compiles a tag with interpolated tagname', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText9)({
+        myTagName: 'span'
+    }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children.length, 1)
+    assert.equal(vnode.children[0].tagName, 'SPAN')
 
     done()
   })
