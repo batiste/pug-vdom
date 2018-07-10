@@ -48,7 +48,7 @@ function compileAttrs(attrs, attrBlocks) {
 }
 
 function exposeLocals(locals) {
-    return Object.keys(locals).forEach(function(prop) {
+    return Object.keys(locals).reduce(function(acc, prop) {
         if (!(prop in global))  {
             Object.defineProperty(global, prop, {
                 configurable: true, 
@@ -58,9 +58,10 @@ function exposeLocals(locals) {
             });
             exposedLocals[prop] = 1;
         } else {
-            eval('var ' + prop + ' =  locals.' + prop);
+            acc[prop] = 1;
         }
-    })
+        return acc
+    }, {})
 }
 
 function deleteExposedLocals() {

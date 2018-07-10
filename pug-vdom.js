@@ -49,6 +49,7 @@ Compiler.prototype.addI = function (str) {
 
 Compiler.prototype.compile = function () {
   this.bootstrap()
+  // console.log(this.buffer.join(''))
   return this.buffer.join('')
 }
 
@@ -60,7 +61,12 @@ Compiler.prototype.bootstrap = function () {
   // Bring all the variables from this into this scope
   this.addI(`var locals = context;\r\n`)
   this.addI(`var self = locals;\r\n`)
-  this.addI(`pugVDOMRuntime.exposeLocals(locals);\r\n`)
+  this.addI(`var remainingKeys = pugVDOMRuntime.exposeLocals(locals);\r\n`)
+  this.addI(`for (var prop in remainingKeys) {\r\n`)
+  this.indent++
+  this.addI(`eval('var ' + prop + ' =  locals.' + prop);\r\n`)
+  this.indent--
+  this.addI(`}\r\n`)
   this.addI(`var n0Child = []\r\n`)
   this.visit(this.ast)
   this.addI(`pugVDOMRuntime.deleteExposedLocals()\r\n`)
