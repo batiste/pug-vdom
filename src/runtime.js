@@ -1,9 +1,14 @@
 exports.compileAttrs = compileAttrs;
+exports.exposeLocals = exposeLocals;
+exports.deleteExposedLocals = deleteExposedLocals;
+
 global.pugVDOMRuntime = exports
 
 var flatten = function(arr) {
     return Array.prototype.concat.apply([], arr); 
 };
+
+var exposedLocals = {};
 
 function compileAttrs(attrs, attrBlocks) {
     var attrsObj = attrBlocks
@@ -38,4 +43,27 @@ function compileAttrs(attrs, attrBlocks) {
     }
 
     return attrsObj;
+}
+
+function exposeLocals(locals) {
+    return Object.keys(locals).forEach(function(prop) {
+        if (!(prop in window))  {
+            Object.defineProperty(window, prop, {
+                configurable: true, 
+                get: function() {
+                    return locals[prop]
+                }
+            });
+            exposedLocals[prop] = 1;
+        } else {
+            eval('var ' + prop + ' =  locals.' + prop);
+        }
+    })
+}
+
+function deleteExposedLocals() {
+    for (var prop in exposedLocals) {
+        delete window[prop];
+        delete exposedLocals[prop];
+    }
 }

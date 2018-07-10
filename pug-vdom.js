@@ -60,9 +60,10 @@ Compiler.prototype.bootstrap = function () {
   // Bring all the variables from this into this scope
   this.addI(`var locals = context;\r\n`)
   this.addI(`var self = locals;\r\n`)
-  this.addI(`for (var prop in locals) eval('var ' + prop + ' =  locals.' + prop)\r\n`)
+  this.addI(`pugVDOMRuntime.exposeLocals(locals);\r\n`)
   this.addI(`var n0Child = []\r\n`)
   this.visit(this.ast)
+  this.addI(`pugVDOMRuntime.deleteExposedLocals()\r\n`)
   this.addI(`return n0Child\r\n`)
   this.indent--
   this.addI(`}\r\n`)
