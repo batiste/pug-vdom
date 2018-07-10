@@ -4,6 +4,8 @@ exports.deleteExposedLocals = deleteExposedLocals;
 
 global.pugVDOMRuntime = exports
 
+if (!global) global = window;
+
 var flatten = function(arr) {
     return Array.prototype.concat.apply([], arr); 
 };
@@ -47,8 +49,8 @@ function compileAttrs(attrs, attrBlocks) {
 
 function exposeLocals(locals) {
     return Object.keys(locals).forEach(function(prop) {
-        if (!(prop in window))  {
-            Object.defineProperty(window, prop, {
+        if (!(prop in global))  {
+            Object.defineProperty(global, prop, {
                 configurable: true, 
                 get: function() {
                     return locals[prop]
@@ -63,7 +65,7 @@ function exposeLocals(locals) {
 
 function deleteExposedLocals() {
     for (var prop in exposedLocals) {
-        delete window[prop];
+        delete global[prop];
         delete exposedLocals[prop];
     }
 }
