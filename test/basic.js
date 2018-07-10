@@ -45,6 +45,10 @@ var pugText9 = `
     #{locals.myTagName}(data-foo="somevalue")
 `;
 
+var pugText10 = `
+.my-element(data-foo=myLocal)
+`
+
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
 }
@@ -184,5 +188,16 @@ describe('Compiler', function () {
 
     done()
   })
+
+  it('Compiles a template with locals namespace conflict', function (done) {
+    global.myLocal = 'wrong';
+    var vnodes = vDom.generateTemplateFunction(pugText10)({
+        myLocal: "foo"
+    }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.properties.attributes['data-foo'], "foo")
+    done()
+})
 
 })

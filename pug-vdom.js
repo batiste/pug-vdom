@@ -49,7 +49,6 @@ Compiler.prototype.addI = function (str) {
 
 Compiler.prototype.compile = function () {
   this.bootstrap()
-  // console.log(this.buffer.join(''))
   return this.buffer.join('')
 }
 
