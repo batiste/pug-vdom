@@ -280,7 +280,7 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with buffered escaped string content from local var.', function (done) {
-    var vnodes = vDom.generateTemplateFunction(pugText12)({ myText: 'plain' }, h);
+    var vnodes = vDom.generateTemplateFunction(pugText14)({ myText: '<div>plain</div>' }, h);
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
@@ -297,7 +297,7 @@ describe('Compiler', function () {
 
 
   it('Compiles a tag with buffered non-escaped string content from local var.', function (done) {
-    var vnodes = vDom.generateTemplateFunction(pugText13)({ myText: 'html' }, h);
+    var vnodes = vDom.generateTemplateFunction(pugText15)({ myText: '<div>html</div>' }, h);
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
