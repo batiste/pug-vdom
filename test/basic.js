@@ -49,6 +49,45 @@ var pugText10 = `
 .my-element(data-foo=myLocal)
 `
 
+var pugText11 = `
+div
+    p This text belongs to the paragraph tag.
+    br
+    .
+        This text belongs to the div tag.
+`
+
+var pugText12 = `
+div
+    | This text is #{"<div>plain</div>"}
+    .foo bar
+    | This text is #{"<div>plain</div>"}
+`
+
+var pugText13 = `
+div
+    | This text is !{"<div>html</div>"}
+    .foo bar
+    | This text is !{"<div>html</div>"}
+`
+
+var pugText14 = `
+div
+    | This text is #{locals.myText}
+    .foo bar
+    | This text is #{locals.myText}
+`
+
+var pugText15 = `
+div
+    | This text is !{locals.myText}
+    .foo bar
+    | This text is !{locals.myText}
+`
+
+
+
+
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
 }
@@ -198,6 +237,78 @@ describe('Compiler', function () {
 
     assert.equal(vnode.properties.attributes['data-foo'], "foo")
     done()
-})
+  })
+
+  it('Compiles a tag with dot block content.', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText11)({}, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[2].type, 'Widget');
+    assert.equal(vnode.children[2].html, 'This text belongs to the div tag.');
+
+    done()
+  })
+
+  it('Compiles a tag with buffered escaped string content.', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText12)({}, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[1].type, 'Widget');
+    assert.equal(vnode.children[1].escape, true);
+    assert.equal(vnode.children[1].html, "<div>plain</div>");
+    assert.notEqual(vnode.children[2].type, 'Widget');
+    assert.equal(vnode.children[4].type, 'Widget');
+    assert.equal(vnode.children[4].escape, true);
+    assert.equal(vnode.children[4].html, "<div>plain</div>");
+
+    done()
+  })
+
+  it('Compiles a tag with buffered non-escaped string content.', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText13)({}, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[1].type, 'Widget');
+    assert.equal(vnode.children[1].escape, false);
+    assert.equal(vnode.children[1].html, "<div>html</div>");
+    assert.notEqual(vnode.children[2].type, 'Widget');
+    assert.equal(vnode.children[4].type, 'Widget');
+    assert.equal(vnode.children[4].escape, false);
+    assert.equal(vnode.children[4].html, "<div>html</div>");
+
+    done()
+  })
+
+  it('Compiles a tag with buffered escaped string content from local var.', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText12)({ myText: 'plain' }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[1].type, 'Widget');
+    assert.equal(vnode.children[1].escape, true);
+    assert.equal(vnode.children[1].html, "<div>plain</div>");
+    assert.notEqual(vnode.children[2].type, 'Widget');
+    assert.equal(vnode.children[4].type, 'Widget');
+    assert.equal(vnode.children[4].escape, true);
+    assert.equal(vnode.children[4].html, "<div>plain</div>");
+
+    done()
+  })
+
+
+
+  it('Compiles a tag with buffered non-escaped string content from local var.', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText13)({ myText: 'html' }, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[1].type, 'Widget');
+    assert.equal(vnode.children[1].escape, false);
+    assert.equal(vnode.children[1].html, "<div>html</div>");
+    assert.notEqual(vnode.children[2].type, 'Widget');
+    assert.equal(vnode.children[4].type, 'Widget');
+    assert.equal(vnode.children[4].escape, false);
+    assert.equal(vnode.children[4].html, "<div>html</div>");
+
+    done()
+  })
 
 })
