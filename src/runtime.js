@@ -1,6 +1,9 @@
 exports.compileAttrs = compileAttrs;
 exports.exposeLocals = exposeLocals;
 exports.deleteExposedLocals = deleteExposedLocals;
+exports.makeHtmlNode = makeHtmlNode;
+
+var isVnode = require('virtual-dom/vnode/is-vnode');
 
 global.pugVDOMRuntime = exports
 
@@ -11,6 +14,43 @@ var flatten = function(arr) {
 };
 
 var exposedLocals = {};
+
+function vDomHtmlWidget(html, escape) {
+    this.html = html;
+    this.escape = escape;
+    this.type = 'Widget';
+}
+
+vDomHtmlWidget.prototype.update = function(previous) {
+    if (this.escape != previous.escape || this.html !== previous.html) {
+        return this.init()
+    }    
+}
+
+vDomHtmlWidget.prototype.renderContent = function(div) {
+    if (this.escape) {
+        div.innerText = this.html.trim();
+    } else {
+        div.innerHTML = this.html.trim();
+    }
+    return div;
+}
+
+vDomHtmlWidget.prototype.init = function() {
+    if (typeof this.html === 'string') {
+        var div = document.createElement('div');
+        this.renderContent(div)
+        return div.firstChild;
+    }
+    throw 'Unrecognized html input in pug template';
+}
+
+function makeHtmlNode(html, escape=true) {
+    if (isVnode(html)) {
+        return html;
+    }
+    return new vDomHtmlWidget(html, escape);
+}
 
 function compileAttrs(attrs, attrBlocks) {
     var attrsObj = attrBlocks
