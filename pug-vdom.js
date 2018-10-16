@@ -102,11 +102,8 @@ Compiler.prototype.visitTag = function (node, parent) {
 
 Compiler.prototype.visitInterpolatedTag = Compiler.prototype.visitTag;
 Compiler.prototype.visitText = function (node, parent) {
-  if (node.val[0] === '<') {
-    throw new Error(`Literal HTML cannot be supported properly yet (DomParser could do the trick): ${node.val}`)
-  }
   var s = JSON.stringify(node.val)
-  this.addI(`n${this.parentTagId}Child.push(${s})\r\n`)
+  this.addI(`n${this.parentTagId}Child.push(runtime.makeHtmlNode(${s}, ${node.mustEscape}))\r\n`)
 }
 
 Compiler.prototype.visitNamedBlock = function (node, parent) {
@@ -115,7 +112,7 @@ Compiler.prototype.visitNamedBlock = function (node, parent) {
 
 Compiler.prototype.visitCode = function (node, parent) {
   if (node.buffer) {
-    this.addI(`n${this.parentTagId}Child.push(${node.val})\r\n`)
+    this.addI(`n${this.parentTagId}Child.push(runtime.makeHtmlNode(${node.val}, ${node.mustEscape}))\r\n`)
   } else {
     this.addI(node.val + '\r\n')
   }
