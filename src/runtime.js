@@ -31,9 +31,9 @@ vDomHtmlWidget.prototype.init = function() {
     if (typeof this.html === 'string') {
         var div = document.createElement('div');
         if (this.escape) {
-            div.innerText = this.html.trim();
+            div.innerText = this.html;
         } else {
-            div.innerHTML = this.html.trim();
+            div.innerHTML = this.html;
         }
         return div.firstChild;
     }
@@ -44,7 +44,7 @@ function makeHtmlNode(html, escape=true) {
     if (isVnode(html)) {
         return html;
     }
-    return new vDomHtmlWidget(html, escape);
+    return new vDomHtmlWidget(html.trim(), escape);
 }
 
 function compileAttrs(attrs, attrBlocks) {
