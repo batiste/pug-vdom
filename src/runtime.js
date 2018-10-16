@@ -27,19 +27,14 @@ vDomHtmlWidget.prototype.update = function(previous) {
     }    
 }
 
-vDomHtmlWidget.prototype.renderContent = function(div) {
-    if (this.escape) {
-        div.innerText = this.html.trim();
-    } else {
-        div.innerHTML = this.html.trim();
-    }
-    return div;
-}
-
 vDomHtmlWidget.prototype.init = function() {
     if (typeof this.html === 'string') {
         var div = document.createElement('div');
-        this.renderContent(div)
+        if (this.escape) {
+            div.innerText = this.html.trim();
+        } else {
+            div.innerHTML = this.html.trim();
+        }
         return div.firstChild;
     }
     throw 'Unrecognized html input in pug template';
