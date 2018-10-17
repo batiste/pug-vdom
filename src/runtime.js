@@ -3,8 +3,6 @@ exports.exposeLocals = exposeLocals;
 exports.deleteExposedLocals = deleteExposedLocals;
 exports.makeHtmlNode = makeHtmlNode;
 
-var isVnode = require('virtual-dom/vnode/is-vnode');
-
 global.pugVDOMRuntime = exports
 
 if (!global) global = window;
@@ -15,36 +13,25 @@ var flatten = function(arr) {
 
 var exposedLocals = {};
 
-function vDomHtmlWidget(html, escape) {
-    this.html = html;
-    this.escape = escape;
-    this.type = 'Widget';
+function vDomElementWidget(el) {
+    this.el = el;
+}
+vDomElementWidget.prototype.type = 'Widget';
+vDomElementWidget.prototype.init = function() {
+    return this.el;
 }
 
-vDomHtmlWidget.prototype.update = function(previous) {
-    if (this.escape != previous.escape || this.html !== previous.html) {
-        return this.init()
-    }    
-}
+vDomElementWidget.prototype.update = vDomElementWidget.prototype.init;
 
-vDomHtmlWidget.prototype.init = function() {
-    if (typeof this.html === 'string') {
-        var div = document.createElement('div');
-        if (this.escape) {
-            div.innerText = this.html;
-        } else {
-            div.innerHTML = this.html;
-        }
-        return div.firstChild;
-    }
-    throw 'Unrecognized html input in pug template';
-}
-
-function makeHtmlNode(html, escape=true) {
-    if (isVnode(html)) {
+function makeHtmlNode(html) {
+    if (typeof html !== 'string') {
         return html;
     }
-    return new vDomHtmlWidget(html.trim(), escape);
+    var div = document.createElement('div');
+    div.innerHTML = html.trim();
+    return Array.prototype.slice.call(div.childNodes).map(function(child) {
+        return new vDomElementWidget(child)
+    });
 }
 
 function compileAttrs(attrs, attrBlocks) {

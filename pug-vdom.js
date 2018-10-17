@@ -102,8 +102,13 @@ Compiler.prototype.visitTag = function (node, parent) {
 
 Compiler.prototype.visitInterpolatedTag = Compiler.prototype.visitTag;
 Compiler.prototype.visitText = function (node, parent) {
-  var s = JSON.stringify(node.val)
-  this.addI(`n${this.parentTagId}Child.push(runtime.makeHtmlNode(${s}, ${node.mustEscape}))\r\n`)
+  var val = node.val.trim();
+  var s = JSON.stringify(val)
+  if (val[0] === '<') {
+    this.addI(`n${this.parentTagId}Child = n${this.parentTagId}Child.concat(runtime.makeHtmlNode(${s}))\r\n`)
+  } else {
+    this.addI(`n${this.parentTagId}Child.push(${s})\r\n`)
+  }  
 }
 
 Compiler.prototype.visitNamedBlock = function (node, parent) {
@@ -112,7 +117,7 @@ Compiler.prototype.visitNamedBlock = function (node, parent) {
 
 Compiler.prototype.visitCode = function (node, parent) {
   if (node.buffer) {
-    this.addI(`n${this.parentTagId}Child.push(runtime.makeHtmlNode(${node.val}, ${node.mustEscape}))\r\n`)
+    this.addI(`n${this.parentTagId}Child = n${this.parentTagId}Child.concat(${node.mustEscape ? `${node.val}` : `runtime.makeHtmlNode(${node.val})`})\r\n`)
   } else {
     this.addI(node.val + '\r\n')
   }
