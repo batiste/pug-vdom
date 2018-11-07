@@ -4,7 +4,8 @@ var vDom = require('../pug-vdom')
 var vm = require('vm')
 require('../runtime');
 var h = require('virtual-dom/h');
-
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 var pugText1 = `
 .my-element
 `
@@ -84,7 +85,14 @@ div
     .foo bar
     | This text is !{locals.myText}
 `
-
+var pugText16 = `
+div
+    p This text belongs to the paragraph tag.
+    <div>This is html</div>
+    br
+    .
+        This text belongs to the div tag.
+`
 
 
 
@@ -243,8 +251,8 @@ describe('Compiler', function () {
     var vnodes = vDom.generateTemplateFunction(pugText11)({}, h);
     var vnode = vnodes[0];
 
-    assert.equal(vnode.children[2].type, 'Widget');
-    assert.equal(vnode.children[2].html, 'This text belongs to the div tag.');
+    assert.equal(vnode.children[2].type, 'VirtualText');
+    assert.equal(vnode.children[2].text, 'This text belongs to the div tag.');
 
     done()
   })
@@ -253,28 +261,27 @@ describe('Compiler', function () {
     var vnodes = vDom.generateTemplateFunction(pugText12)({}, h);
     var vnode = vnodes[0];
 
-    assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].escape, true);
-    assert.equal(vnode.children[1].html, "<div>plain</div>");
+    assert.equal(vnode.children[1].type, 'VirtualText');
+    assert.equal(vnode.children[1].text, "<div>plain</div>");
     assert.notEqual(vnode.children[2].type, 'Widget');
-    assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].escape, true);
-    assert.equal(vnode.children[4].html, "<div>plain</div>");
+    assert.equal(vnode.children[4].type, 'VirtualText');
+    assert.equal(vnode.children[4].text, "<div>plain</div>");
 
     done()
   })
 
   it('Compiles a tag with buffered non-escaped string content.', function (done) {
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText13)({}, h);
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].escape, false);
-    assert.equal(vnode.children[1].html, "<div>html</div>");
+    assert.equal(vnode.children[1].el.outerHTML, "<div>html</div>");
     assert.notEqual(vnode.children[2].type, 'Widget');
     assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].escape, false);
-    assert.equal(vnode.children[4].html, "<div>html</div>");
+    assert.equal(vnode.children[4].el.outerHTML, "<div>html</div>");
+
+    delete global.document;
 
     done()
   })
@@ -283,13 +290,11 @@ describe('Compiler', function () {
     var vnodes = vDom.generateTemplateFunction(pugText14)({ myText: '<div>plain</div>' }, h);
     var vnode = vnodes[0];
 
-    assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].escape, true);
-    assert.equal(vnode.children[1].html, "<div>plain</div>");
+    assert.equal(vnode.children[1].type, 'VirtualText');
+    assert.equal(vnode.children[1].text, "<div>plain</div>");
     assert.notEqual(vnode.children[2].type, 'Widget');
-    assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].escape, true);
-    assert.equal(vnode.children[4].html, "<div>plain</div>");
+    assert.equal(vnode.children[4].type, 'VirtualText');
+    assert.equal(vnode.children[4].text, "<div>plain</div>");
 
     done()
   })
@@ -297,16 +302,30 @@ describe('Compiler', function () {
 
 
   it('Compiles a tag with buffered non-escaped string content from local var.', function (done) {
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText15)({ myText: '<div>html</div>' }, h);
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].escape, false);
-    assert.equal(vnode.children[1].html, "<div>html</div>");
+    assert.equal(vnode.children[1].el.outerHTML, "<div>html</div>");
     assert.notEqual(vnode.children[2].type, 'Widget');
     assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].escape, false);
-    assert.equal(vnode.children[4].html, "<div>html</div>");
+    assert.equal(vnode.children[4].el.outerHTML, "<div>html</div>");
+
+    delete global.document;
+
+    done()
+  })
+
+  it('Compiles a tag containing HTML text line.', function (done) {
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
+    var vnodes = vDom.generateTemplateFunction(pugText16)({}, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[1].type, 'Widget');
+    assert.equal(vnode.children[1].el.outerHTML, '<div>This is html</div>');
+
+    delete global.document;
 
     done()
   })
