@@ -49,7 +49,7 @@ function compileAttrs(attrs, attrBlocks) {
     
     for (var propName in attrsObj) {
         if (propName === 'class') {
-            attrsObj[propName] = flatten(attrsObj[propName].map(attrValue => {
+            attrsObj[propName] = flatten(attrsObj[propName].map(function(attrValue) {
                 if (attrValue && typeof attrValue === 'object' && !Array.isArray(attrValue)) {
                     var classResult = [];
                     for (var className in attrValue) {
