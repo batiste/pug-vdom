@@ -94,6 +94,12 @@ div
         This text belongs to the div tag.
 `
 
+var pugText17 = `
+- this.words = ["myword"]
+for word in this.words
+  = word
+`
+
 var pugText18 = `
 each x in func()
   = x
@@ -239,6 +245,13 @@ describe('Compiler', function () {
     }, h);
 
     assert.equal(callCount, 1)
+    done()
+  })
+
+  it('Keeps `this` unchanged inside for...in loop', function (done) {
+    var vnodes = vDom.generateTemplateFunction(pugText17).call({}, {}, h);
+
+    assert.equal(vnodes[0], 'myword')
     done()
   })
 

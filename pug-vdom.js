@@ -157,7 +157,7 @@ Compiler.prototype.visitEach = function (node, parent) {
   this.addI(`var ${node.val} = ${tempVar}[${key}]\r\n`)
   this.visitBlock(node.block)
   this.indent--
-  this.addI(`})\r\n`)
+  this.addI(`}.bind(this))\r\n`)
 }
 
 Compiler.prototype.visitExtends = function (node, parent) {
