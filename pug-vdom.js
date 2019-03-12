@@ -148,10 +148,13 @@ Compiler.prototype.visitWhile = function (node) {
 }
 
 Compiler.prototype.visitEach = function (node, parent) {
+  var tempVar = 'v' + uid()
   var key = node.key || 'k' + uid()
-  this.addI(`Object.keys(${node.obj}).forEach(function (${key}) {\r\n`)
+
+  this.addI(`var ${tempVar} = ${node.obj}\r\n`)
+  this.addI(`Object.keys(${tempVar}).forEach(function (${key}) {\r\n`)
   this.indent++
-  this.addI(`var ${node.val} = ${node.obj}[${key}]\r\n`)
+  this.addI(`var ${node.val} = ${tempVar}[${key}]\r\n`)
   this.visitBlock(node.block)
   this.indent--
   this.addI(`})\r\n`)
