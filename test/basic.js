@@ -94,6 +94,10 @@ div
         This text belongs to the div tag.
 `
 
+var pugText18 = `
+each x in func()
+  = x
+`
 
 
 function vdom (tagname, attrs, children) {
@@ -221,6 +225,20 @@ describe('Compiler', function () {
     assert.equal(vnode.children.length, 4)
     assert.ok(vnode.children.every(child => child.tagName === 'LI'))
 
+    done()
+  })
+
+  it('Only evaluates expression once in for...in loop', function(done) {
+    var callCount = 0;
+    var vnodes = vDom.generateTemplateFunction(pugText18)({
+      func: function() {
+        callCount += 1;
+
+        return [1, 2];
+      }
+    }, h);
+
+    assert.equal(callCount, 1)
     done()
   })
 
