@@ -21,7 +21,12 @@ vDomElementWidget.prototype.init = function() {
     return this.el;
 }
 
-vDomElementWidget.prototype.update = vDomElementWidget.prototype.init;
+vDomElementWidget.prototype.update = function(previous, domEl) {
+    if (domEl.outerHTML !== this.el.outerHTML) {
+        return this.el;
+    }
+    return domEl;
+}
 
 function makeHtmlNode(html) {
     if (typeof html !== 'string') {
