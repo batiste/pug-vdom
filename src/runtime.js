@@ -13,19 +13,27 @@ var flatten = function(arr) {
 
 var exposedLocals = {};
 
-function vDomElementWidget(el) {
-    this.el = el;
+function domNodeWidget(node) {
+    this.node = node;
 }
-vDomElementWidget.prototype.type = 'Widget';
-vDomElementWidget.prototype.init = function() {
-    return this.el;
+domNodeWidget.widgetType = 'domNodeWidget';
+domNodeWidget.prototype.type = 'Widget';
+domNodeWidget.prototype.init = function() {
+    return this.node.cloneNode(true);
 }
 
-vDomElementWidget.prototype.update = function(previous, domEl) {
-    if (domEl.outerHTML !== this.el.outerHTML) {
-        return this.el;
+domNodeWidget.prototype.update = function(previous, domNode) {
+    if (previous.constructor.widgetType === 'domNodeWidget' && domNode.nodeType === this.node.nodeType) {
+        switch (domNode.nodeType) {
+            case 3:
+                domNode.textContent = this.node.textContent;
+                return domNode;
+            case 1:
+                domNode.outerHTML = this.node.outerHTML;
+                return domNode;
+        }
     }
-    return domEl;
+    return this.init();
 }
 
 function makeHtmlNode(html) {
@@ -35,7 +43,7 @@ function makeHtmlNode(html) {
     var div = document.createElement('div');
     div.innerHTML = html.trim();
     return Array.prototype.slice.call(div.childNodes).map(function(child) {
-        return new vDomElementWidget(child)
+        return new domNodeWidget(child)
     });
 }
 
