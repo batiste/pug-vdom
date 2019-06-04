@@ -121,6 +121,14 @@ Compiler.prototype.visitCode = function (node, parent) {
   } else {
     this.addI(node.val + '\r\n')
   }
+
+  if(node.block){
+    this.addI('{\r\n')
+    this.indent++
+    this.visitBlock(node.block, node)
+    this.indent--
+    this.addI('}\r\n')
+  }
 }
 
 Compiler.prototype.visitConditional = function (node, parent) {

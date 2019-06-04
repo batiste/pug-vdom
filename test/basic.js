@@ -105,6 +105,10 @@ each x in func()
   = x
 `
 
+var pugText19 = `
+- for(var i=5; i<6; i++)
+  p= i
+`
 
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
@@ -357,6 +361,15 @@ describe('Compiler', function () {
     assert.equal(vnode.children[1].el.outerHTML, '<div>This is html</div>');
 
     delete global.document;
+
+    done()
+  })
+
+  it('Compiles code node with block', function(done) {
+    var vnodes = vDom.generateTemplateFunction(pugText19)({}, h);
+    var vnode = vnodes[0];
+
+    assert.equal(vnode.children[0].text, "5");
 
     done()
   })
