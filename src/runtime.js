@@ -40,8 +40,9 @@ function makeHtmlNode(html) {
     if (typeof html !== 'string') {
         return html;
     }
-    var div = document.createElement('div');
-    div.innerHTML = html.trim();
+    var range = document.createRange();
+    range.selectNode(document.getElementsByTagName("div").item(0));
+    var div = range.createContextualFragment(html.trim());
     return Array.prototype.slice.call(div.childNodes).map(function(child) {
         return new domNodeWidget(child)
     });
