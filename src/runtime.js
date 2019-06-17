@@ -19,7 +19,7 @@ function domNodeWidget(node) {
 domNodeWidget.widgetType = 'domNodeWidget';
 domNodeWidget.prototype.type = 'Widget';
 domNodeWidget.prototype.init = function() {
-    return this.node.cloneNode(true);
+    return loadScripts(this.node.cloneNode(true));
 }
 
 domNodeWidget.prototype.update = function(previous, domNode) {
@@ -36,13 +36,47 @@ domNodeWidget.prototype.update = function(previous, domNode) {
     return this.init();
 }
 
+function replaceScript(script) {
+    if (script.type && script.type !== 'text/javascript') {
+        return script;
+    }
+    var newScript = document.createElement('script')
+    newScript.type = 'text/javascript'
+    if (script.src) {
+        // Note: scripts will be loaded asynchronously (not in order)
+        newScript.src = script.src
+    } else {
+        newScript.textContent = script.textContent
+    }
+    
+    return newScript;
+}
+
+function loadScripts(domNode) {
+    if (!domNode.querySelectorAll) return domNode;
+    if (domNode.tagName ===  'SCRIPT') {
+        return replaceScript(domNode);
+    }
+    
+    Array.prototype.slice.call(domNode.querySelectorAll('script'))
+        .forEach(function(script) {
+            var newScript = replaceScript(script);
+            if (newScript !== script) {
+                script.parentNode.insertBefore(newScript, script);
+                script.parentNode.removeChild(script);
+            }
+        });
+    return domNode;
+}
+
 function makeHtmlNode(html) {
     if (typeof html !== 'string') {
         return html;
     }
-    var range = document.createRange();
-    range.selectNode(document.getElementsByTagName("div").item(0));
-    var div = range.createContextualFragment(html.trim());
+
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    
     return Array.prototype.slice.call(div.childNodes).map(function(child) {
         return new domNodeWidget(child)
     });

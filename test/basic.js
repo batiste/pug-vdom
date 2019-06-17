@@ -4,6 +4,8 @@ var vDom = require('../pug-vdom')
 var vm = require('vm')
 require('../runtime');
 var h = require('virtual-dom/h');
+const diff = require('virtual-dom/diff');
+const patch = require('virtual-dom/patch');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 var pugText1 = `
@@ -108,6 +110,14 @@ each x in func()
 var pugText19 = `
 - for(var i=5; i<6; i++)
   p= i
+`
+var pugText20 = `
+div
+    | !{"<script>window.foo()</script>"}
+`
+var pugText21 = `
+div
+    | #{"<script>window.foo()</script>"}
 `
 
 function vdom (tagname, attrs, children) {
@@ -311,10 +321,10 @@ describe('Compiler', function () {
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].el.outerHTML, "<div>html</div>");
+    assert.equal(vnode.children[1].node.outerHTML, "<div>html</div>");
     assert.notEqual(vnode.children[2].type, 'Widget');
     assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].el.outerHTML, "<div>html</div>");
+    assert.equal(vnode.children[4].node.outerHTML, "<div>html</div>");
 
     delete global.document;
 
@@ -342,10 +352,10 @@ describe('Compiler', function () {
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].el.outerHTML, "<div>html</div>");
+    assert.equal(vnode.children[1].node.outerHTML, "<div>html</div>");
     assert.notEqual(vnode.children[2].type, 'Widget');
     assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].el.outerHTML, "<div>html</div>");
+    assert.equal(vnode.children[4].node.outerHTML, "<div>html</div>");
 
     delete global.document;
 
@@ -358,7 +368,7 @@ describe('Compiler', function () {
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].el.outerHTML, '<div>This is html</div>');
+    assert.equal(vnode.children[1].node.outerHTML, '<div>This is html</div>');
 
     delete global.document;
 
@@ -370,6 +380,40 @@ describe('Compiler', function () {
     var vnode = vnodes[0];
 
     assert.equal(vnode.children[0].text, "5");
+
+    done()
+  })
+
+  it('Compiles a tag script tag, verifying that script is executed when html is not escaped.', function (done) {
+    var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
+    global.document = window.document;
+    var didExecute = false;
+    window.foo = function() {
+      didExecute = true;
+    }
+    var vnodes = vDom.generateTemplateFunction(pugText20)({}, h);
+    var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
+
+    assert.ok(didExecute);
+
+    done()
+  })
+
+  it('Compiles a tag script tag, verifying that script is not executed when html is escaped.', function (done) {
+    var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
+    global.document = window.document;
+    var didExecute = false;
+    window.foo = function() {
+      didExecute = true;
+    }
+    var vnodes = vDom.generateTemplateFunction(pugText21)({}, h);
+    var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
+
+    assert.notEqual(didExecute, true);
 
     done()
   })
