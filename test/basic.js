@@ -8,117 +8,6 @@ const diff = require('virtual-dom/diff');
 const patch = require('virtual-dom/patch');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-var pugText1 = `
-.my-element
-`
-
-var pugText2 = `
-.my-element(data-foo=locals.myLocal)
-`
-
-var pugText3 = `
-.class-1#my-id(data-foo=locals.myLocal, data-boo='goo',class='class-2 class-3')&attributes({class: "class-4"})
-`
-
-var pugText4 = `
-.class-1#my-id(data-foo=locals.myLocal, class='class-2 class-3')&attributes({class: "class-4"}, {class: 'class-5', 'data-moo': locals.myOtherLocal})
-`
-
-var pugText5 = `
-.class-1#my-id(data-foo=locals.myLocal, class=['class-2', 'class-3'])&attributes({class: ["class-4"]}, {class: 'class-5', 'data-moo': locals.myOtherLocal})
-`
-
-var pugText6 = `
-.class-1#my-id(data-foo=locals.myLocal, class=['class-2', 'class-3'])&attributes({class: ["class-4"]}, {class: 'class-5', 'data-moo': locals.myOtherLocal}, {class: {'my-class': true, 'my-other-class': false, 'my-third-class': locals.myThirdLocal, 'my-fourth-class': locals.myFourthLocal } })
-`
-
-var pugText7 = `
-.class-1(class={'class-2': locals.myLocal, 'class-3': false, 'class-4': {} })
-`
-
-var pugText8 = `
-- var n = 0;
-ul
-    while n < locals.numChildren
-        li= n++
-`;
-
-var pugText9 = `
-.parent
-    #{locals.myTagName}(data-foo="somevalue")
-`;
-
-var pugText10 = `
-.my-element(data-foo=myLocal)
-`
-
-var pugText11 = `
-div
-    p This text belongs to the paragraph tag.
-    br
-    .
-        This text belongs to the div tag.
-`
-
-var pugText12 = `
-div
-    | This text is #{"<div>plain</div>"}
-    .foo bar
-    | This text is #{"<div>plain</div>"}
-`
-
-var pugText13 = `
-div
-    | This text is !{"<div>html</div>"}
-    .foo bar
-    | This text is !{"<div>html</div>"}
-`
-
-var pugText14 = `
-div
-    | This text is #{locals.myText}
-    .foo bar
-    | This text is #{locals.myText}
-`
-
-var pugText15 = `
-div
-    | This text is !{locals.myText}
-    .foo bar
-    | This text is !{locals.myText}
-`
-var pugText16 = `
-div
-    p This text belongs to the paragraph tag.
-    <div>This is html</div>
-    br
-    .
-        This text belongs to the div tag.
-`
-
-var pugText17 = `
-- this.words = ["myword"]
-for word in this.words
-  = word
-`
-
-var pugText18 = `
-each x in func()
-  = x
-`
-
-var pugText19 = `
-- for(var i=5; i<6; i++)
-  p= i
-`
-var pugText20 = `
-div
-    | !{"<script>window.foo()</script>"}
-`
-var pugText21 = `
-div
-    | #{"<script>window.foo()</script>"}
-`
 
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
@@ -145,68 +34,80 @@ describe('Compiler', function () {
   })
 
   it('Compiles a template function from pug text', function (done) {
-      assert.ok(typeof vDom.generateTemplateFunction(pugText1) === 'function')
-      done()
+    const pugText1 = `
+.my-element`;
+    assert.ok(typeof vDom.generateTemplateFunction(pugText1) === 'function')
+    done()
   })
 
   it('Compiles a template function and executes it with locals object', function (done) {
-      var vnodes = vDom.generateTemplateFunction(pugText2)({
-          myLocal: "foo"
-      }, h);
-      var vnode = vnodes[0];
+    const pugText2 = `
+.my-element(data-foo=locals.myLocal)`
+    var vnodes = vDom.generateTemplateFunction(pugText2)({
+        myLocal: "foo"
+    }, h);
+    var vnode = vnodes[0];
 
-      assert.equal(vnode.properties.attributes['data-foo'], "foo")
-      done()
+    assert.equal(vnode.properties.attributes['data-foo'], "foo")
+    done()
   })
 
   it('Compiles a pug tag with complex attributes', function (done) {
-      var vnodes = vDom.generateTemplateFunction(pugText3)({
-          myLocal: "foo"
-      }, h);
-      var vnode = vnodes[0];
+    const pugText3 = `
+.class-1#my-id(data-foo=locals.myLocal, data-boo='goo',class='class-2 class-3')&attributes({class: "class-4"})`;
+    var vnodes = vDom.generateTemplateFunction(pugText3)({
+        myLocal: "foo"
+    }, h);
+    var vnode = vnodes[0];
 
-      assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4')
-      assert.equal(vnode.properties.attributes.id, 'my-id')
-      assert.equal(vnode.properties.attributes['data-foo'], 'foo')
-      assert.equal(vnode.properties.attributes['data-boo'], 'goo')
-      assert.equal(vnode.key, 'my-id')
+    assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4')
+    assert.equal(vnode.properties.attributes.id, 'my-id')
+    assert.equal(vnode.properties.attributes['data-foo'], 'foo')
+    assert.equal(vnode.properties.attributes['data-boo'], 'goo')
+    assert.equal(vnode.key, 'my-id')
 
-      done()
+    done()
   })
 
-  it('Compiles a pug tag with complex attributes using multiple &attributes blocks', function (done) {
-      var vnodes = vDom.generateTemplateFunction(pugText4)({
-          myLocal: "foo",
-          myOtherLocal: "moo"
-      }, h);
-      var vnode = vnodes[0];
+  it('Compiles a pug tag with complex attributes using multiple &attributes blocks', function (done) {    
+    const pugText4 = `
+.class-1#my-id(data-foo=locals.myLocal, class='class-2 class-3')&attributes({class: "class-4"}, {class: 'class-5', 'data-moo': locals.myOtherLocal})`;
+    var vnodes = vDom.generateTemplateFunction(pugText4)({
+        myLocal: "foo",
+        myOtherLocal: "moo"
+    }, h);
+    var vnode = vnodes[0];
 
-      assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4 class-5')
-      assert.equal(vnode.properties.attributes.id, 'my-id')
-      assert.equal(vnode.properties.attributes['data-foo'], 'foo')
-      assert.equal(vnode.properties.attributes['data-moo'], 'moo')
-      assert.equal(vnode.key, 'my-id')
+    assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4 class-5')
+    assert.equal(vnode.properties.attributes.id, 'my-id')
+    assert.equal(vnode.properties.attributes['data-foo'], 'foo')
+    assert.equal(vnode.properties.attributes['data-moo'], 'moo')
+    assert.equal(vnode.key, 'my-id')
 
-      done()
+    done()
   })
 
   it('Compiles a pug tag with complex attributes using multiple &attributes blocks and class attribute as array', function (done) {
-      var vnodes = vDom.generateTemplateFunction(pugText5)({
-          myLocal: "foo",
-          myOtherLocal: "moo"
-      }, h);
-      var vnode = vnodes[0];
+    const pugText5 = `
+.class-1#my-id(data-foo=locals.myLocal, class=['class-2', 'class-3'])&attributes({class: ["class-4"]}, {class: 'class-5', 'data-moo': locals.myOtherLocal})`;
+    var vnodes = vDom.generateTemplateFunction(pugText5)({
+        myLocal: "foo",
+        myOtherLocal: "moo"
+    }, h);
+    var vnode = vnodes[0];
 
-      assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4 class-5')
-      assert.equal(vnode.properties.attributes.id, 'my-id')
-      assert.equal(vnode.properties.attributes['data-foo'], 'foo')
-      assert.equal(vnode.properties.attributes['data-moo'], 'moo')
-      assert.equal(vnode.key, 'my-id')
+    assert.equal(vnode.properties.attributes.class, 'class-1 class-2 class-3 class-4 class-5')
+    assert.equal(vnode.properties.attributes.id, 'my-id')
+    assert.equal(vnode.properties.attributes['data-foo'], 'foo')
+    assert.equal(vnode.properties.attributes['data-moo'], 'moo')
+    assert.equal(vnode.key, 'my-id')
 
-      done()
+    done()
   })
 
   it('Compiles a pug tag with complex attributes using multiple &attributes blocks and class attribute as object', function (done) {
+    const pugText6 = `
+.class-1#my-id(data-foo=locals.myLocal, class=['class-2', 'class-3'])&attributes({class: ["class-4"]}, {class: 'class-5', 'data-moo': locals.myOtherLocal}, {class: {'my-class': true, 'my-other-class': false, 'my-third-class': locals.myThirdLocal, 'my-fourth-class': locals.myFourthLocal } })`;
     var vnodes = vDom.generateTemplateFunction(pugText6)({
         myLocal: "foo",
         myOtherLocal: "moo",
@@ -225,6 +126,9 @@ describe('Compiler', function () {
   })
 
   it('Compiles a pug tag with class attribute as object', function (done) {
+    const pugText7 = `
+.class-1(class={'class-2': locals.myLocal, 'class-3': false, 'class-4': {} })`;
+
     var vnodes = vDom.generateTemplateFunction(pugText7)({
         myLocal: true
     }, h);
@@ -236,6 +140,11 @@ describe('Compiler', function () {
   })
 
   it('Compiles pug code using while loop', function (done) {
+    const pugText8 = `
+- var n = 0;
+ul
+    while n < locals.numChildren
+        li= n++`;
     var vnodes = vDom.generateTemplateFunction(pugText8)({
         numChildren: 4
     }, h);
@@ -249,6 +158,9 @@ describe('Compiler', function () {
   })
 
   it('Only evaluates expression once in for...in loop', function(done) {
+    const pugText18 = `
+each x in func()
+  = x`;
     var callCount = 0;
     var vnodes = vDom.generateTemplateFunction(pugText18)({
       func: function() {
@@ -263,6 +175,10 @@ describe('Compiler', function () {
   })
 
   it('Keeps `this` unchanged inside for...in loop', function (done) {
+    const pugText17 = `
+- this.words = ["myword"]
+for word in this.words
+  = word`;
     var vnodes = vDom.generateTemplateFunction(pugText17).call({}, {}, h);
 
     assert.equal(vnodes[0], 'myword')
@@ -270,6 +186,9 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with interpolated tagname', function (done) {
+    const pugText9 = `
+.parent
+    #{locals.myTagName}(data-foo="somevalue")`;
     var vnodes = vDom.generateTemplateFunction(pugText9)({
         myTagName: 'span'
     }, h);
@@ -282,6 +201,9 @@ describe('Compiler', function () {
   })
 
   it('Compiles a template with locals namespace conflict', function (done) {
+    const pugText10 = `
+.my-element(data-foo=myLocal)`;
+
     global.myLocal = 'wrong';
     var vnodes = vDom.generateTemplateFunction(pugText10)({
         myLocal: "foo"
@@ -293,6 +215,12 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with dot block content.', function (done) {
+    const pugText11 = `
+div
+    p This text belongs to the paragraph tag.
+    br
+    .
+        This text belongs to the div tag.`;
     var vnodes = vDom.generateTemplateFunction(pugText11)({}, h);
     var vnode = vnodes[0];
 
@@ -303,6 +231,12 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with buffered escaped string content.', function (done) {
+    const pugText12 = `
+div
+    | This text is #{"<div>plain</div>"}
+    .foo bar
+    | This text is #{"<div>plain</div>"}`;
+
     var vnodes = vDom.generateTemplateFunction(pugText12)({}, h);
     var vnode = vnodes[0];
 
@@ -316,6 +250,12 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with buffered non-escaped string content.', function (done) {
+    const pugText13 = `
+div
+    | This text is !{"<div>html</div>"}
+    .foo bar
+    | This text is !{"<div>html</div>"}`;
+
     global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText13)({}, h);
     var vnode = vnodes[0];
@@ -332,6 +272,12 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with buffered escaped string content from local var.', function (done) {
+    const pugText14 = `
+div
+    | This text is #{locals.myText}
+    .foo bar
+    | This text is #{locals.myText}`;
+
     var vnodes = vDom.generateTemplateFunction(pugText14)({ myText: '<div>plain</div>' }, h);
     var vnode = vnodes[0];
 
@@ -344,9 +290,13 @@ describe('Compiler', function () {
     done()
   })
 
-
-
   it('Compiles a tag with buffered non-escaped string content from local var.', function (done) {
+    const pugText15 = `
+div
+    | This text is !{locals.myText}
+    .foo bar
+    | This text is !{locals.myText}`;
+
     global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText15)({ myText: '<div>html</div>' }, h);
     var vnode = vnodes[0];
@@ -361,8 +311,16 @@ describe('Compiler', function () {
 
     done()
   })
-
+  
   it('Compiles a tag containing HTML text line.', function (done) {
+    const pugText16 = `
+div
+    p This text belongs to the paragraph tag.
+    <div>This is html</div>
+    br
+    .
+        This text belongs to the div tag.`;
+
     global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText16)({}, h);
     var vnode = vnodes[0];
@@ -376,6 +334,9 @@ describe('Compiler', function () {
   })
 
   it('Compiles code node with block', function(done) {
+    const pugText19 = `
+- for(var i=5; i<6; i++)
+  p= i`;
     var vnodes = vDom.generateTemplateFunction(pugText19)({}, h);
     var vnode = vnodes[0];
 
@@ -385,6 +346,10 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag script tag, verifying that script is executed when html is not escaped.', function (done) {
+    const pugText20 = `
+div
+    | !{"<script>window.foo()</script>"}`;
+
     var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
     global.document = window.document;
     var didExecute = false;
@@ -402,6 +367,10 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag script tag, verifying that script is not executed when html is escaped.', function (done) {
+    const pugText21 = `
+div
+    | #{"<script>window.foo()</script>"}`;
+
     var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
     global.document = window.document;
     var didExecute = false;
