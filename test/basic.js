@@ -420,26 +420,20 @@ describe('Compiler', function () {
 
     done()
   })
-const pugText22 = `
-div
-    .text= myText
-    | !{innerTemplate({ myText: myInnerText }, h)}
-`
-const pugText23 = `
-div
-    .inner-text= myText
-`
+  
   it('Compiles a tag executing nested template.', function (done) {
     var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
     global.document = window.document;
-    const innerTemplate = vDom.generateTemplateFunction(pugText23);
-    var vnodes = vDom.generateTemplateFunction(pugText22)({ myText: 'foo', myInnerText: 'bar', innerTemplate }, h);
-    var vnode = vnodes[0];
+    var inner = vDom.generateTemplateFunction(`= x`)
+    var outer = vDom.generateTemplateFunction(`
+= inner({x: x})
+= x + "2"`);
+    
+    var vnode = outer({x: "a", inner})[0];
     var patches = diff(h('div'), vnode);
     var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
-    console.log(el.outerHTML);
-    // assert.notEqual(didExecute, true);
+    assert.equal(el.outerHTML, '2 4');
 
     done()
   })
