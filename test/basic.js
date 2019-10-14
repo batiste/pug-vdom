@@ -87,6 +87,7 @@ div
     .foo bar
     | This text is !{locals.myText}
 `
+
 var pugText16 = `
 div
     p This text belongs to the paragraph tag.
@@ -119,6 +120,8 @@ var pugText21 = `
 div
     | #{"<script>window.foo()</script>"}
 `
+
+
 
 function vdom (tagname, attrs, children) {
   return {tagName: tagname, attrs: attrs, children: children}
@@ -414,6 +417,29 @@ describe('Compiler', function () {
     var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
     assert.notEqual(didExecute, true);
+
+    done()
+  })
+const pugText22 = `
+div
+    .text= myText
+    | !{innerTemplate({ myText: myInnerText }, h)}
+`
+const pugText23 = `
+div
+    .inner-text= myText
+`
+  it('Compiles a tag executing nested template.', function (done) {
+    var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
+    global.document = window.document;
+    const innerTemplate = vDom.generateTemplateFunction(pugText23);
+    var vnodes = vDom.generateTemplateFunction(pugText22)({ myText: 'foo', myInnerText: 'bar', innerTemplate }, h);
+    var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
+
+    console.log(el.outerHTML);
+    // assert.notEqual(didExecute, true);
 
     done()
   })
