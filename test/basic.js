@@ -316,15 +316,13 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with buffered non-escaped string content.', function (done) {
-    global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText13)({}, h);
     var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
-    assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].node.outerHTML, "<div>html</div>");
-    assert.notEqual(vnode.children[2].type, 'Widget');
-    assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].node.outerHTML, "<div>html</div>");
+    assert.equal(el.outerHTML, '<div>This text is <div>html</div><div class="foo">bar</div>This text is <div>html</div></div>');
 
     delete global.document;
 
@@ -332,30 +330,27 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag with buffered escaped string content from local var.', function (done) {
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText14)({ myText: '<div>plain</div>' }, h);
     var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
-    assert.equal(vnode.children[1].type, 'VirtualText');
-    assert.equal(vnode.children[1].text, "<div>plain</div>");
-    assert.notEqual(vnode.children[2].type, 'Widget');
-    assert.equal(vnode.children[4].type, 'VirtualText');
-    assert.equal(vnode.children[4].text, "<div>plain</div>");
+    assert.equal(el.outerHTML, '<div>This text is &lt;div&gt;plain&lt;/div&gt;<div class="foo">bar</div>This text is &lt;div&gt;plain&lt;/div&gt;</div>');
+
+    delete global.document;
 
     done()
   })
 
-
-
   it('Compiles a tag with buffered non-escaped string content from local var.', function (done) {
-    global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText15)({ myText: '<div>html</div>' }, h);
     var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
-    assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].node.outerHTML, "<div>html</div>");
-    assert.notEqual(vnode.children[2].type, 'Widget');
-    assert.equal(vnode.children[4].type, 'Widget');
-    assert.equal(vnode.children[4].node.outerHTML, "<div>html</div>");
+    assert.equal(el.outerHTML, '<div>This text is <div>html</div><div class="foo">bar</div>This text is <div>html</div></div>');
 
     delete global.document;
 
@@ -363,12 +358,13 @@ describe('Compiler', function () {
   })
 
   it('Compiles a tag containing HTML text line.', function (done) {
-    global.document = (new JSDOM(`<!DOCTYPE html><html><body></body></html>`)).window.document;
+    global.document = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`)).window.document;
     var vnodes = vDom.generateTemplateFunction(pugText16)({}, h);
     var vnode = vnodes[0];
+    var patches = diff(h('div'), vnode);
+    var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
-    assert.equal(vnode.children[1].type, 'Widget');
-    assert.equal(vnode.children[1].node.outerHTML, '<div>This is html</div>');
+    assert.equal(el.outerHTML, '<div><p>This text belongs to the paragraph tag.</p><div>This is html</div><br>This text belongs to the div tag.</div>');
 
     delete global.document;
 
