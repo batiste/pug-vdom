@@ -4,11 +4,18 @@ include /mixins.pug
 
 block append content
   // a comment
+  //
+    multiline
+    comment
   p This is #{msg.toUpperCase() + ' is the message'}
   +withSomeBlock()
     p
       | this text should be in red
 
+  //- unbuffered comment
+  //-
+    multiline
+    unbuffered comment
   h2 Inputs
   each input in inputs
     p

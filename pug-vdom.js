@@ -147,6 +147,8 @@ Compiler.prototype.visitConditional = function (node, parent) {
 
 Compiler.prototype.visitComment = function (node, parent) {}
 
+Compiler.prototype.visitBlockComment = function(node, parent) {}
+
 Compiler.prototype.visitWhile = function (node) {
   this.addI(`while (${node.test}){\r\n`);
   this.indent++
