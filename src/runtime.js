@@ -1,6 +1,11 @@
 exports.compileAttrs = compileAttrs;
-exports.exposeLocals = exposeLocals;
-exports.deleteExposedLocals = deleteExposedLocals;
+exports.enterLocalsScope = enterLocalsScope;
+exports.exitLocalsScope = exitLocalsScope;
+
+// Backward compatible with older versions
+exports.exposeLocals = enterLocalsScope;
+exports.deleteExposedLocals = exitLocalsScope;
+
 exports.makeHtmlNode = makeHtmlNode;
 
 global.pugVDOMRuntime = exports
@@ -11,7 +16,7 @@ var flatten = function(arr) {
     return Array.prototype.concat.apply([], arr);
 };
 
-var exposedLocals = {};
+var exposedLocalsStack = [];
 
 function domNodeWidget(node) {
     this.node = node;
@@ -118,7 +123,9 @@ function compileAttrs(attrs, attrBlocks) {
 }
 
 function exposeLocals(locals) {
-    return Object.keys(locals).reduce(function(acc, prop) {
+    var exposedLocals = {}, remainingKeys = {};
+
+    Object.keys(locals).forEach(function(prop) {
         if (!(prop in global))  {
             Object.defineProperty(global, prop, {
                 configurable: true,
@@ -126,17 +133,36 @@ function exposeLocals(locals) {
                     return locals[prop]
                 }
             });
-            exposedLocals[prop] = 1;
+            exposedLocals[prop] = locals[prop];
         } else {
-            acc[prop] = 1;
+            remainingKeys[prop] = 1;
         }
-        return acc
-    }, {})
+    });
+
+    return { exposedLocals: exposedLocals, remainingKeys: remainingKeys };
 }
 
-function deleteExposedLocals() {
+function deleteExposedLocals(exposedLocals) {
     for (var prop in exposedLocals) {
         delete global[prop];
-        delete exposedLocals[prop];
+    }
+}
+
+function enterLocalsScope(locals) {
+    if (exposedLocalsStack.length) {
+        deleteExposedLocals(exposedLocalsStack[exposedLocalsStack.length - 1]);
+    }
+
+    var exposeResults = exposeLocals(locals);
+    exposedLocalsStack.push(exposeResults.exposedLocals);
+
+    return exposeResults.remainingKeys;
+}
+
+function exitLocalsScope() {
+    deleteExposedLocals(exposedLocalsStack.pop());
+
+    if (exposedLocalsStack.length) {
+        exposeLocals(exposedLocalsStack[exposedLocalsStack.length - 1]);
     }
 }
