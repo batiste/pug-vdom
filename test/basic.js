@@ -420,20 +420,21 @@ describe('Compiler', function () {
 
     done()
   })
-  
+
   it('Compiles a tag executing nested template.', function (done) {
     var window = (new JSDOM(`<!DOCTYPE html><html><body><div></div></body></html>`, {runScripts: "dangerously"})).window;
     global.document = window.document;
-    var inner = vDom.generateTemplateFunction(`= x`)
+    var inner = vDom.generateTemplateFunction(`= x + "1"`)
     var outer = vDom.generateTemplateFunction(`
-= inner({x: x})
-= x + "2"`);
-    
-    var vnode = outer({x: "a", inner})[0];
+div
+  = inner({x: x}, h)
+  = x + "2"`);
+
+    var vnode = outer({x: "a", inner}, h)[0];
     var patches = diff(h('div'), vnode);
     var el = patch(global.document.documentElement.querySelector('body').firstChild, patches);
 
-    assert.equal(el.outerHTML, '2 4');
+    assert.equal(el.outerHTML, '<div>a1a2</div>');
 
     done()
   })

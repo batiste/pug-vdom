@@ -1,6 +1,11 @@
 exports.compileAttrs = compileAttrs;
-exports.exposeLocals = exposeLocals;
-exports.deleteExposedLocals = deleteExposedLocals;
+exports.enterLocalsScope = enterLocalsScope;
+exports.exitLocalsScope = exitLocalsScope;
+
+// Backward compatible with older versions
+exports.exposeLocals = enterLocalsScope;
+exports.deleteExposedLocals = exitLocalsScope;
+
 exports.makeHtmlNode = makeHtmlNode;
 
 global.pugVDOMRuntime = exports
@@ -8,10 +13,10 @@ global.pugVDOMRuntime = exports
 if (!global) global = window;
 
 var flatten = function(arr) {
-    return Array.prototype.concat.apply([], arr); 
+    return Array.prototype.concat.apply([], arr);
 };
 
-var exposedLocals = {};
+var exposedLocalsStack = [];
 
 function domNodeWidget(node) {
     this.node = node;
@@ -48,7 +53,7 @@ function replaceScript(script) {
     } else {
         newScript.textContent = script.textContent
     }
-    
+
     return newScript;
 }
 
@@ -57,7 +62,7 @@ function loadScripts(domNode) {
     if (domNode.tagName ===  'SCRIPT') {
         return replaceScript(domNode);
     }
-    
+
     Array.prototype.slice.call(domNode.querySelectorAll('script'))
         .forEach(function(script) {
             var newScript = replaceScript(script);
@@ -76,7 +81,7 @@ function makeHtmlNode(html) {
 
     var div = document.createElement('div');
     div.innerHTML = html;
-    
+
     return Array.prototype.slice.call(div.childNodes).map(function(child) {
         return new domNodeWidget(child)
     });
@@ -94,7 +99,7 @@ function compileAttrs(attrs, attrBlocks) {
             finalObj[attr.name] = finalObj[attr.name] ? finalObj[attr.name].concat(val) : [val];
             return finalObj;
         }, {}));
-    
+
     for (var propName in attrsObj) {
         if (propName === 'class') {
             attrsObj[propName] = flatten(attrsObj[propName].map(function(attrValue) {
@@ -108,7 +113,7 @@ function compileAttrs(attrs, attrBlocks) {
                     return classResult;
                 }
                 return attrValue;
-            })).join(' ');            
+            })).join(' ');
         } else {
             attrsObj[propName] = attrsObj[propName].pop();
         }
@@ -118,25 +123,46 @@ function compileAttrs(attrs, attrBlocks) {
 }
 
 function exposeLocals(locals) {
-    return Object.keys(locals).reduce(function(acc, prop) {
+    var exposedLocals = {}, remainingKeys = {};
+
+    Object.keys(locals).forEach(function(prop) {
         if (!(prop in global))  {
             Object.defineProperty(global, prop, {
-                configurable: true, 
+                configurable: true,
                 get: function() {
                     return locals[prop]
                 }
             });
-            exposedLocals[prop] = 1;
+            exposedLocals[prop] = locals[prop];
         } else {
-            acc[prop] = 1;
+            remainingKeys[prop] = 1;
         }
-        return acc
-    }, {})
+    });
+
+    return { exposedLocals: exposedLocals, remainingKeys: remainingKeys };
 }
 
-function deleteExposedLocals() {
+function deleteExposedLocals(exposedLocals) {
     for (var prop in exposedLocals) {
         delete global[prop];
-        delete exposedLocals[prop];
+    }
+}
+
+function enterLocalsScope(locals) {
+    if (exposedLocalsStack.length) {
+        deleteExposedLocals(exposedLocalsStack[exposedLocalsStack.length - 1]);
+    }
+
+    var exposeResults = exposeLocals(locals);
+    exposedLocalsStack.push(exposeResults.exposedLocals);
+
+    return exposeResults.remainingKeys;
+}
+
+function exitLocalsScope() {
+    deleteExposedLocals(exposedLocalsStack.pop());
+
+    if (exposedLocalsStack.length) {
+        exposeLocals(exposedLocalsStack[exposedLocalsStack.length - 1]);
     }
 }
