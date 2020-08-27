@@ -102,7 +102,7 @@ Compiler.prototype.visitTag = function (node, parent) {
 
 Compiler.prototype.visitInterpolatedTag = Compiler.prototype.visitTag;
 Compiler.prototype.visitText = function (node, parent) {
-  var val = node.val.trim();
+  var val = node.val;
   var s = JSON.stringify(val)
   if (val[0] === '<') {
     this.addI(`n${this.parentTagId}Child = n${this.parentTagId}Child.concat(runtime.makeHtmlNode(${s}))\r\n`)
