@@ -53,7 +53,7 @@ Compiler.prototype.compile = function () {
 }
 
 Compiler.prototype.bootstrap = function () {
-  this.addI(`function render(context, h) {\r\n`)
+  this.addI(`function render(context, h, text = (string) => string) {\r\n`)
   this.indent++
   this.addI(`if (!pugVDOMRuntime) throw "pug-vdom runtime not found.";\r\n`)
   this.addI(`var runtime = pugVDOMRuntime\r\n`)
@@ -107,7 +107,7 @@ Compiler.prototype.visitText = function (node, parent) {
   if (val[0] === '<') {
     this.addI(`n${this.parentTagId}Child = n${this.parentTagId}Child.concat(runtime.makeHtmlNode(${s}))\r\n`)
   } else {
-    this.addI(`n${this.parentTagId}Child.push(${s})\r\n`)
+    this.addI(`n${this.parentTagId}Child.push(text(${s}))\r\n`)
   }  
 }
 
@@ -117,7 +117,7 @@ Compiler.prototype.visitNamedBlock = function (node, parent) {
 
 Compiler.prototype.visitCode = function (node, parent) {
   if (node.buffer) {
-    this.addI(`n${this.parentTagId}Child = n${this.parentTagId}Child.concat(${node.mustEscape ? `${node.val}` : `runtime.makeHtmlNode(${node.val})`})\r\n`)
+    this.addI(`n${this.parentTagId}Child = n${this.parentTagId}Child.concat(${node.mustEscape ? `text(${node.val})` : `runtime.makeHtmlNode(${node.val})`})\r\n`)
   } else {
     this.addI(node.val + '\r\n')
   }
