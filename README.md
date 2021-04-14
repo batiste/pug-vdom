@@ -49,7 +49,7 @@ var createElement = require('virtual-dom/create-element')
 require('pug-vdom/runtime')
 
 var tree = render({variable: 1}, h)
-var rootNode = createElement(tree[0]) // we expect only node at the root from our template
+var rootNode = createElement(tree[0]) // we expect only one node at the root from our template
 document.querySelector('main').appendChild(rootNode)
 
 function liveRender () {
