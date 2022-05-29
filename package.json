@@ -1,7 +1,7 @@
 {
   "name": "pug-vdom",
   "version": "1.1.2",
-  "description": "",
+  "description": "pug-vdom can compile a pug template into a render function that can create a virtual dom tree",
   "main": "pug-vdom.js",
   "scripts": {
     "test": "mocha",
