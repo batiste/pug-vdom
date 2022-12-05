@@ -21,7 +21,7 @@
     "express": "^4.15.2",
     "jsdom": "^12.2.0",
     "mocha": "^10.1.0",
-    "nodemon": "^1.19.2",
+    "nodemon": "^2.0.20",
     "pug-attrs": "^2.0.2",
     "virtual-dom": "^2.1.1",
     "void-elements": "^3.1.0",
